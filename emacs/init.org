@@ -1,0 +1,898 @@
+#+HTML_HEAD: <meta charset='utf-8'></meta>
+#+HTML_HEAD: <link rel="stylesheet" href="https://rawgit.com/simonced/css/master/markdown.css" />
+#+PROPERTY: header-args :eval never-export
+#+STARTUP: nohideblocks
+#+TITLE: My Emacs configuration file
+
+* Before starting
+Here is the way I call that config on local computers:
+
+: (package-initialize)
+: (add-to-list 'load-path "~/git/dotfiles/emacs/")
+: (org-babel-load-file "~/git/dotfiles/emacs/init.org")
+
+* Path and such
+#+BEGIN_SRC emacs-lisp
+(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+#+END_SRC
+* Packages
+** Repos
+Found on [[http://melpa.org/#/getting-started][Melpa]].
+
+#+BEGIN_SRC emacs-lisp
+  (require 'package) ;; You might already have this line
+  (add-to-list 'package-archives
+               '("org" . "http://orgmode.org/elpa/") t)
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.org/packages/") t)
+  (package-initialize) ;; You might already have this line
+#+END_SRC
+
+-----
+
+Utility function (auto download of missing packages): [[http://stackoverflow.com/a/10095853/921796][Reference]]
+
+#+BEGIN_SRC emacs-lisp
+(defun ensure-package-installed (&rest packages)
+  "Assure every package is installed, ask for installation if it’s not.
+
+Return a list of installed packages or nil for every skipped package."
+  (mapcar
+   (lambda (package)
+     ;; (package-installed-p 'evil)
+     (unless (package-installed-p package)
+       (package-install package)))
+     packages)
+)
+
+;; make sure to have downloaded archive description.
+;; Or use package-archive-contents as suggested by Nicolas Dudebout
+(or (file-exists-p package-user-dir)
+  (package-refresh-contents))
+#+END_SRC
+** My selection
+#+BEGIN_SRC emacs-lisp
+;; simply add package names to the list
+(ensure-package-installed
+ ;; === UI utilities ===
+ 'helm
+ 'swiper
+ 'flx-ido
+ ;; === Text Utilities ===
+ 'company
+ 'company-web
+ ;; 'auto-complete                      ; This is for php-eldoc
+ 'multiple-cursors
+ 'goto-last-change
+ 'helm-company
+ ;; === Web related ===
+ 'apache-mode
+ 'web-mode
+ ;; 'php-mode
+ ;; 'ob-php                             ; php in org files
+ ;; 'php-eldoc
+ ;; 'ac-php                             ; Works with company as well
+ 'emmet-mode
+ 'js2-mode
+ ;; === Elixir relater ===
+ 'alchemist
+ 'ob-elixir
+ ;; === Lisp related ===
+ 'rainbow-delimiters
+ 'rainbow-mode
+ 'eldoc
+ ;; 'paredit
+ ;; 'dot-mode
+ ;; === Org related ===
+ 'org
+ 'htmlize
+ 'org-bullets
+ ;; === Tools ===
+ 'exec-path-from-shell
+ ;; 'powerline
+ ;; 'folding
+ ;; 'nyan-mode
+ ;; === Themes ===
+ 'color-theme
+ 'cyberpunk-theme
+ )
+
+;; if <24.4 do not include magit in the packages
+(if (not (version< emacs-version "24.4"))
+	(ensure-package-installed
+	 ;; === Git utilities ===
+	 'magit
+	 'git-gutter
+	 )
+  )
+#+END_SRC
+
+#+RESULTS:
+
+** Helm related
+#+BEGIN_SRC emacs-lisp
+(helm-mode)
+;; keys
+(global-set-key (kbd "C-x M-f") 'helm-recentf)
+(global-set-key (kbd "C-x b")   'helm-buffers-list)
+(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
+(global-set-key (kbd "M-x")     'helm-M-x)
+(global-set-key (kbd "C-x f")   'helm-find-files)
+#+END_SRC
+** Multiple cursors related
+#+BEGIN_SRC emacs-lisp
+(require 'multiple-cursors)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+#+END_SRC
+** Company related
+#+BEGIN_SRC emacs-lisp
+(require 'company)
+(global-company-mode)
+
+;; Files completion
+(require 'company-files)
+(global-set-key (kbd "C-c f") 'company-files)
+
+;; Completion related
+(global-set-key (kbd "TAB") 'company-indent-or-complete-common)
+#+END_SRC
+* My functions
+#+BEGIN_QUOTE
+Trying to be consistent, all functions should start with "ced/"
+#+END_QUOTE
+** Org related
+#+BEGIN_SRC emacs-lisp
+;; same but used to insert timestamp in org files at export
+;; used in conjonction with
+;; -*- org-export-babel-evaluate: t -*-
+;; at the top of the related files
+;; so it exports everything automatically
+(defun ced/org-today ()
+  (interactive)
+  (print (format "Update : %s" (format-time-string "%F" nil)))
+  )
+
+
+(defun ced/org-drawer-format (name contents)
+  "Formating drawer entries at html export.
+Only the headlines with ':export: t' will have their data exported in html"
+  (when (and (equal name "PARAMS") (string-match ":export:\s+t" contents))
+	(let (mycontent)
+	  (setq mycontent (replace-regexp-in-string ":export:.*t\n?" "" contents))
+	  (message mycontent)
+	  (replace-regexp-in-string ":\\(.*?\\):\\(.*\\)\n?" "<b>\\1</b>:\\2<br>" mycontent)
+	  )
+	)
+  )
+
+(setq org-html-format-drawer-function 'ced/org-drawer-format)
+
+
+(defun ced/org-image-display ()
+  "Simple function that displays only the inline picture on the line at point"
+  (interactive)
+  (org-display-inline-images t nil (line-beginning-position) (line-end-position))
+  )
+#+END_SRC
+** SQL related
+#+BEGIN_SRC emacs-lisp
+;; Function that makes the post http request
+(defun url-http-post (url args)
+  "
+Send ARGS to URL as a POST request.
+Found here:
+http://qiita.com/sanryuu/items/eed79c7b99616e769e67
+"
+  (let (
+        (response-string nil)
+        (url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")))
+        (url-request-data
+         (mapconcat (lambda (arg)
+                      (concat (url-hexify-string (car arg))
+                              "="
+                              (url-hexify-string (cdr arg))))
+                    args
+                    "&")))
+    (switch-to-buffer
+     (url-retrieve-synchronously url))
+    (goto-char (point-min))
+    (re-search-forward "\n\n")
+    (setq response-string
+          (buffer-substring-no-properties (point) (point-max)))
+    (kill-buffer (current-buffer))
+    response-string)
+  )
+
+;; ======================================================================
+
+(defun sql-query-format (query)
+  "We use sqlformat.org API to format QUERY given as parameter"
+  (setq answer
+		(url-http-post "https://sqlformat.org/api/v1/format"
+					   ;; Here the trick is to use the ` to force to parse the
+					   ;; ,query parameter (note the , before!)
+					   `(("sql" . ,query)
+						 ("reindent" . "1"))
+					   )
+		)
+  (cdr (assoc 'result (json-read-from-string answer)))
+)
+
+;; ======================================================================
+
+;; Testing our function with simple lisp
+;;(sql-query-format "select * from users where email='test@example.com'")
+
+;; Getting a query from the buffer
+(defun ced/sql-query-format-paragraph ()
+  "We take the current paragraph as a query and format it."
+  (interactive)
+  (save-excursion
+	(progn
+	  (backward-paragraph)
+	  (set-mark (point))
+	  (forward-paragraph)
+	  (setq query (buffer-substring-no-properties (mark) (point)))
+	  (setq query-formated (sql-query-format query))
+	  (kill-region (mark) (point))
+	  (insert query-formated)
+	  )
+	)
+  )
+#+END_SRC
+
+** Misc
+#+BEGIN_SRC emacs-lisp
+(defun ced/create-tags (dir-name)
+  "Create tags file."
+  (interactive "DDirectory: ")
+  (let ((full-command (format "%s -R -e --exclude=.svn --exclude=node_modules --exclude=_test --exclude=smarty --exclude=\"*.min.*\" --langmap=php:.php.inc --PHP-kinds=+cf-v %s" myctags-command (directory-file-name dir-name))))
+	(message (format "Full ctags command: %s" full-command))
+	(cd (directory-file-name dir-name))
+	(shell-command full-command)
+	)
+  )
+
+;; programming related ===
+;; commenting a line
+(defun ced/comment-line ()
+  "We comment or uncomment an existing line."
+  (interactive)
+  (save-excursion
+	(comment-or-uncomment-region (point-at-bol) (point-at-eol))
+	)
+  )
+
+;; utilities
+(defun ced/duplicate-line ()
+  "Duplicates the current line and insert it bellow."
+  (interactive)
+  (let ((line (buffer-substring (point-at-bol) (point-at-eol))))
+	(end-of-line)
+	(newline)
+	(insert line)
+	(beginning-of-line)
+	)
+  )
+
+(defun ced/join-lines ()
+  "Joining lines like in VIM"
+  (interactive)
+  (next-line)
+  (join-line)
+  )
+
+
+(defun ced/decrement-number-at-point ()
+  ;; Increment number at point
+  (interactive)
+  (skip-chars-backward "0123456789")
+  (or (looking-at "[0123456789]+")
+	  (error "No number at point"))
+  (replace-match (number-to-string (1- (string-to-number (match-string 0))))))
+
+
+(defun ced/increment-number-at-point ()
+  ;; decrement number at point
+  (interactive)
+  (skip-chars-backward "0123456789")
+  (or (looking-at "[0123456789]+")
+	  (error "No number at point"))
+  (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
+
+
+;; Date insertion
+(defun ced/insert-current-date-ymd ()
+  "現在の年月日曜をこの順にカーソル位置に挿入する。例：2001-07-23"
+  (interactive)
+  (let (pt (today (format-time-string "%Y-%m-%d" nil)))
+
+	;; We check it we are on a blank character
+	(if (or
+		 (char-equal ?\s  (char-after))
+		 (char-equal ?\n (char-after))
+		 (char-equal ?\t (char-after))
+		 )
+		(insert today)
+	  (progn
+		(skip-chars-backward "-0-9")
+		(setq pt (point))
+		(skip-chars-forward "-0-9")
+
+		;; Before replacing the text, we need to be sure it's a date
+		(if	(string-match "[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}" (buffer-substring-no-properties pt (point)))
+			(progn
+			  (delete-region pt (point))
+			  ;; replacing selection with current date
+			  (insert today)
+			  )
+		  )
+		)
+	  )
+	)
+  ) 
+
+;; ======================================================================
+
+(defun ced/do-highlight (text)
+  "We simply highlight TEXT"
+  ;; (unhighlight-regexp 'last-text)        ; clear highlight
+  (pop-mark)                    ; clears the region
+  (highlight-regexp text)       ; new text to highlight
+  )
+
+
+(defun ced/do-search (text)
+  "We do the search of TEXT"
+  (unless (search-forward text nil t)
+	(message "Nothing to find!")
+	)
+  )
+
+
+(defun ced/search-region (point mark &optional arg)
+  "If we have a region, we highlight the text in that region.
+If no region but a previous search, we jump and highlight to the next occurance.
+If we have a prefix (C-u), we clear the highlight.
+"
+  (interactive "r\nP")
+  (make-variable-buffer-local 'last-text)
+
+  ;; (message (format "prefix %s" arg))
+  (if (equal arg '(4))	; C-u
+	  ;; We do not search if if have prefix argument
+	  (unhighlight-regexp last-text)
+
+    (if (use-region-p) 
+        (let ((point-bkp point) (text (buffer-substring-no-properties point mark)))
+		  (setq last-text text)			;saving for later
+		  (ced/do-highlight text)
+          ;; if we come to cancel the action somehow,
+          ;; we have a point backup available
+          )
+
+	  ;; We use the previous search if any
+	  (when last-text
+		(ced/do-search last-text)
+		)
+      )        
+    )
+  )
+
+
+;;; Translate JP to EN with google translate opened in browser
+;;; The available google-translate module doesn't give the reading, which I want
+;; 日本語です
+(defun ced/google-translate-jp-en (from_ to_)
+  "Takes current selection and opens the tranlation of google in the browser"
+  (interactive "r")
+  (save-excursion 
+	(if (use-region-p)
+		(let ((text (buffer-substring-no-properties from_ to_)))					
+		  (browse-url (concat "https://translate.google.com/#ja/en/" text))
+		  )
+	  (message "Please use a region.")
+	  )
+	)
+  (deactivate-mark)					; clear region
+  )
+
+
+;;; inspired from http://stackoverflow.com/a/34434144/921796
+(defun ced/file-read-contents (filename)
+  "Return the contents of FILENAME."
+  (with-temp-buffer
+    (insert-file-contents filename)
+    (buffer-string)))
+
+
+;;; Window split change
+;;; ===================
+;;; found at: http://stackoverflow.com/a/33456622/921796
+(defun toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+         (next-win-buffer (window-buffer (next-window)))
+         (this-win-edges (window-edges (selected-window)))
+         (next-win-edges (window-edges (next-window)))
+         (this-win-2nd (not (and (<= (car this-win-edges)
+                     (car next-win-edges))
+                     (<= (cadr this-win-edges)
+                     (cadr next-win-edges)))))
+         (splitter
+          (if (= (car this-win-edges)
+             (car (window-edges (next-window))))
+          'split-window-horizontally
+        'split-window-vertically)))
+    (delete-other-windows)
+    (let ((first-win (selected-window)))
+      (funcall splitter)
+      (if this-win-2nd (other-window 1))
+      (set-window-buffer (selected-window) this-win-buffer)
+      (set-window-buffer (next-window) next-win-buffer)
+      (select-window first-win)
+      (if this-win-2nd (other-window 1))))))
+
+#+END_SRC
+
+* INIT
+** Global settings
+#+BEGIN_SRC emacs-lisp
+;; Language + Encoding
+(set-language-environment "UTF-8")
+
+;; No need of startup screen
+(setq inhibit-startup-screen t)
+
+;; default answers with y/n
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; freely evaluation code in block_src in org files
+(setq org-confirm-babel-evaluate nil)
+
+;; White space customization
+;; source : http://ergoemacs.org/emacs/whitespace-mode.html
+(setq whitespace-display-mappings
+      ;; all numbers are Unicode codepoint in decimal. try (insert-char 182 ) to see it
+      '(
+	(space-mark 32 [183] [46]) ; 32 SPACE, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
+	(newline-mark 10 [182 10]) ; 10 LINE FEED
+	(tab-mark 9 [9655 9] [92 9]) ; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」
+	))
+
+#+END_SRC
+
+** Status Bar related
+#+BEGIN_SRC
+;; (nyan-mode)
+;; (setq nyan-bar-length 10)
+
+;; Powerline
+;; (require 'powerline)
+;; (powerline-default-theme)
+;; (powerline-reset)
+#+END_SRC
+
+** Search + Selection related
+#+BEGIN_SRC emacs-lisp
+;; replace hidden text as well
+(setq search-invisible t)
+
+;; not searching in invisible text with isearch, I leave that to swipper
+(setq isearch-invisible nil)
+
+;; copy selection when done with the mouse
+(setq mouse-drag-copy-region t)
+#+END_SRC
+
+** Display related
+#+BEGIN_SRC emacs-lisp
+;; supposed to help with my font problems (symbola font required)
+;(set-fontset-font "fontset-default" '(#x25A0 . #x265F)  '("Symbola" . "iso10646-1") nil 'prepend)
+
+;; Maximum buffer highlighting!
+(defconst font-lock-maximum-decoration t)
+
+;; No Scroll bars
+(scroll-bar-mode -1)
+
+;; No tool bar
+;(menu-bar-mode 0)
+(tool-bar-mode 0)
+
+;; matching parens
+(show-paren-mode 1)
+
+;; Use visual-line-mode for line wrapping
+(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+(global-visual-line-mode 1)
+(global-hl-line-mode 0)
+
+;; showing empty lines at end of buffer
+(toggle-indicate-empty-lines 1)
+
+;; indentation
+(electric-indent-mode 1)
+#+END_SRC
+
+** Git related
+#+BEGIN_SRC emacs-lisp
+(global-git-gutter-mode 1)
+#+END_SRC
+
+** Grep related
+#+BEGIN_SRC emacs-lisp
+;; might be only for windows, we'll see at next reboot on another system
+(setq grep-use-null-device nil)
+(setq grep-command "grep -nHr --color=always . ")
+#+END_SRC
+** Files and Buffers related
+#+BEGIN_SRC emacs-lisp
+;; ido (matcher for commands/buffers and more)
+(require 'ido)
+(ido-mode 1)
+(setq ido-enable-flex-matching 1)
+(setq ido-auto-merge-work-directories-length -1)
+#+END_SRC
+
+** Default scratch buffer
+#+BEGIN_SRC emacs-lisp
+(setq initial-major-mode 'org-mode)
+(setq initial-scratch-message "\
+# C'est mon buffer org par default.
+# Il n'est pas sauvegarde! Faire attention ;)
+")
+#+END_SRC
+
+** Shortcuts
+#+BEGIN_SRC emacs-lisp
+;; Moving from window to window
+(global-set-key (kbd "C-c <left>")  'windmove-left)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
+(global-set-key (kbd "C-c <up>")    'windmove-up)
+(global-set-key (kbd "C-c <down>")  'windmove-down)
+
+;; A little like in Vim, I don't use those that othen.
+(global-set-key (kbd "C-c C-;") 'goto-last-change)
+(global-set-key (kbd "C-c C-,") 'goto-last-change-reverse)
+
+;; alternate expansion
+(global-set-key (kbd "M-/")     'hippie-expand)
+
+;; my custom search sticky highlight
+(setq lazy-highlight-cleanup 1)         ; nil to leave lazy search highlight
+(setq lazy-highlight-initial-delay 0)   ; highlight search right away
+;; + cleanup binding
+(global-set-key (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
+
+;; using helm instead
+										;(global-set-key (kbd "C-x C-f") 'ido-find-file)
+
+;; ivy (I don't use it...)
+										;(ivy-mode 1) ;; I don't like ivy replacing tags selections in org-mode
+										;(setq ivy-use-virtual-buffers 1)
+
+;; search tool: swiper (convinient but slow in large files)
+(global-set-key (kbd "C-S-s") 'swiper)
+
+;; GIT RELATED ===
+(global-set-key (kbd "C-c C-g n") 'git-gutter:next-hunk)
+(global-set-key (kbd "C-c C-g p") 'git-gutter:previous-hunk)
+
+;; GREP RELATED ===
+;; the setting above doesn't seem to work
+(global-set-key (kbd "C-M-g") 'grep)
+
+;; Number Increment and Decrement ===
+(global-set-key (kbd "C-c +") 'ced/increment-number-at-point)
+(global-set-key (kbd "C-c -") 'ced/decrement-number-at-point)
+
+;; My google translate function
+(global-set-key "\C-cg" 'ced/google-translate-jp-en)
+
+;; mappings to swap lines
+(global-set-key
+ (kbd "M-<up>")
+ (lambda ()
+   (interactive)
+   (transpose-lines 1)
+   (line-move -2)
+   )
+ )
+
+(global-set-key
+ (kbd "M-<down>")
+ (lambda ()
+   (interactive)
+   (line-move 1)
+   (transpose-lines 1)
+   (line-move -1)
+   )
+ )
+
+;; windows/splits related
+(global-set-key (kbd "C-x |") 'toggle-window-split)
+
+;; White space mode!
+(global-set-key (kbd "C-c w") 'whitespace-mode)
+
+;; my commenting
+(global-set-key (kbd "C-M-;") 'ced/comment-line)
+
+;; insert-current-date-ymd 関数
+(global-set-key (kbd "C-c t") 'ced/insert-current-date-ymd)
+
+;; duplicate lines
+(global-set-key (kbd "C-d") 'ced/duplicate-line)
+
+;; joining lines like in VIM
+(global-set-key (kbd "S-<delete>") 'ced/join-lines)
+
+;; search and highlight like I do in Vim
+(global-set-key (kbd "C-c *") 'ced/search-region)
+
+#+END_SRC
+
+* System specific
+** Windows
+#+BEGIN_SRC emacs-lisp
+(when (memq window-system '(w32))
+  ;; sql-mode related
+  ;; (setq sql-mysql-options '("-C" "-t" "-f" "-n"))
+  (setq sql-mysql-options '("-C" "-t" "-f" "-n"))
+
+  ;; ispell related (only used at home?)
+  (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
+  (setq ispell-program-name "aspell")
+)
+#+END_SRC
+
+* Programing
+** General
+#+BEGIN_SRC emacs-lisp
+;; ctags related
+;; command : ctags -R -e --exclude=.svn --exclude=node_modules --exclude=_test --exclude=smarty --exclude="*.min.*" --langmap=php:.php.inc --PHP-kinds=+cf-v
+
+(if (eq system-type 'darwin)
+    ;; on Mac using a specific ctags installed with Homebrew
+    (setq myctags-command "/usr/local/bin/ctags")
+    ;; using the ctags commadn in the path of the system
+    (setq myctags-command "ctags")
+  )
+
+;; Tabs related
+(setq-default c-basic-offset 4 tab-width 4)
+#+END_SRC
+** WEB related
+#+BEGIN_SRC emacs-lisp
+;; I like have some minor-modes always on by default
+(add-hook 'web-mode-hook
+		  (lambda ()
+
+;;			(require 'ac-php)
+;;			(require 'php-mode)
+;;			(setq ac-sources  '(ac-source-php ) )
+			(setq web-mode-enable-current-element-highlight t)
+			
+;;			(php-eldoc-enable)
+			(emmet-mode)
+			(rainbow-delimiters-mode)
+		  ))
+
+;;(add-hook 'css-mode-hook
+;;		  (lambda ()
+;;			(rainbow-mode 1)
+;;			(local-set-key (kbd "TAB") 'company-css)
+;;			))
+
+(add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl$" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+#+END_SRC
+
+** (e)Lisp related
+#+BEGIN_SRC emacs-lisp
+(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+
+(eval-after-load "paredit"
+  '(progn
+	 (define-key paredit-mode-map (kbd "C-<left>") nil)
+	 (define-key paredit-mode-map (kbd "C-<right>") nil)
+	 ))
+
+(defun lisp-like-init ()
+  "Not only Elisp"
+;;  (enable-paredit-mode)
+  (rainbow-delimiters-mode)
+  )
+
+(defun elisp-init ()
+  "Elisp specific"
+;;  (eldoc-mode)
+  )
+
+(add-hook
+ 'emacs-lisp-mode-hook
+ (lambda () (lisp-like-init) (elisp-init))
+ )
+#+END_SRC
+
+** Org related (big section)
+#+BEGIN_SRC emacs-lisp
+;; export code in color
+(require 'htmlize)
+;(setq org-html-htmlize-output-type 'css)
+
+;; no auto export of blocks, it's heavy when 3 or 4 plantuml are present in the same document
+;; it's better to C-c C-c the block manually to generate the result when needed...
+;; only needed for org 8, since org 9 we need another method, see below
+(when  (version< (org-version) "9")
+  (lambda ()
+	(setq org-export-babel-evaluate nil)
+	)
+  )
+
+;; As of org-mode 9, the value above has another behavior when set to `nil`.
+;; Code blocks will all be exported, despite setting :exports results at code blocks.
+;; The solution is to leave that value to `t` and use the header property below at the top of document:
+;; #+PROPERTY: header-args :eval never-export
+;; simple bootstrap header for when I start with a new org file
+(defun ced/org-new ()
+  "
+Simply insert some defaults I use all the time in my org files
+"
+  (interactive)
+  (save-excursion)
+  (insert "#+HTML_HEAD: <meta charset='utf-8'></meta>
+#+HTML_HEAD: <link rel=\"stylesheet\" href=\"https://rawgit.com/simonced/css/master/markdown.css\" />
+#+PROPERTY: header-args :eval never-export
+#+TITLE: <TODO>
+")
+)
+
+;; hide source blocks by default
+(setq org-hide-block-startup t)
+
+;; start org files in indent minor mode (a bit cleaner to look at)
+(setq org-startup-indented t)
+
+;; closing code blocks by default, like outlines
+;; (setq org-hide-block-startup t)
+;; having code blocs in color in org files
+(setq org-src-fontify-natively t)
+
+;; no subscripts in tables (_ character) unless {} are used
+(setq org-export-with-sub-superscripts `{})
+
+;; we export check boxes
+(setq org-html-checkbox-type 'html)
+
+;; we dont need the footer at html export
+(setq org-export-html-postamble nil)
+
+;; tasks entries
+(setq org-log-done t
+	  org-todo-keywords '((sequence "TODO" "WIP" "ONHOLD" "DONE"))
+	  org-todo-keyword-faces '(("WIP" . (:foreground "orange" :weight bold)) ("ONHOLD" . (:foreground "orange" :weight bold))))
+
+;; list agenda
+(global-set-key (kbd "C-c a a") 'org-agenda-list)
+
+;; List tasts
+(global-set-key (kbd "C-c a t") 'org-todo-list)
+
+;; Disabling helm when setting tags in org
+(defun kk/org-set-tags-no-helm (orig-func &rest args)
+  "Run org-set-tags without helm."
+  (if (boundp 'helm-mode)
+      (let ((orig-helm-mode helm-mode))
+	(unwind-protect
+	    (progn
+	      (helm-mode 0)
+	      (apply orig-func args)
+	      )
+	  (helm-mode (if orig-helm-mode 1 0))))
+    (apply orig-func args)
+    ))
+
+(if (not (version< emacs-version "24.4"))
+  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-helm))
+
+;; >>>
+;; prevents nilTODO to be exported in HTML for headlines with TODO keywords in the TOC
+;; answer proposed on reddit: https://www.reddit.com/r/emacs/comments/46717x/orgmode_todo_html_export_in_toc/d042x40
+
+;; (defun ced/org-html--todo (orig-func todo info)
+;;   "Format TODO keywords into HTML."
+;;   (when todo
+;;     (format "<span class=\"%s %s%s\">%s</span>"
+;;         (if (member todo org-done-keywords) "done" "todo")
+;;         (or (plist-get info :html-todo-kwd-class-prefix) "")
+;;             (org-html-fix-class-name todo)
+;;         todo)))
+;; (if (not (version< emacs-version "24.4"))
+;;   (advice-add 'org-html--todo :around 'ced/org-html--todo))
+;; <<< NOT NEEDED IN LAST ORG VERSION (ok in my current version 9.0.9)
+
+(defun ced/org-mode-hook ()
+  ;; babel related
+  
+  ;; Other libs like obp-hp to use php in babel code blocks
+  ;; (require 'gnuplot-mode)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (shell . t) (ruby . t) (js . t) (elixir . t))) ;(gnuplot . t)
+
+  ;; support for shell command parameters in babel blocks
+  ;; found at http://emacs.stackexchange.com/a/19301
+  (require 'ob-sh)
+  (defadvice org-babel-sh-evaluate (around set-shell activate)
+	"Add header argument :shcmd that determines the shell to be called."
+	(let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
+	  ad-do-it
+	  ))
+  
+  ;; we insert relative link to files
+  (setq org-link-file-path-type 'relative)
+
+  ;; we don't want the exported data in the kill ring
+  (setq org-export-copy-to-kill-ring nil)
+  ;; default to 4 headlines of export
+  (setq org-export-headline-levels 4)
+  ;; no numbers by default at export
+  (setq org-export-with-section-numbers nil)
+  ;; no postamble by default
+  (setq org-export-html-postamble nil)
+  
+  ;; flyspell in org mode files? Not so useful
+  ;; (flyspell-mode 1)
+
+  ;; allows , ' and " as a char in markup and not as a regex component
+  ;; (like in ~g,~)
+  ;; thery are removed from the list bellow
+  (setcar (nthcdr 2 org-emphasis-regexp-components) " \t\r\n")
+  (org-set-emph-re
+   'org-emphasis-regexp-components
+   org-emphasis-regexp-components)
+
+  ;; remapping a key to clear highlights
+  (define-key org-mode-map (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
+  ;; Exporting into HTML
+  (define-key org-mode-map (kbd "<f12>") '(lambda ()
+					    (interactive)
+					    (org-html-export-to-html))
+    )
+  (define-key org-mode-map (kbd "C-<f12>") '(lambda ()
+					      (interactive)
+					      ;; only exports the current subtree
+					      (org-html-export-to-html nil t))
+    )
+
+  ;; toggle images in org buffers
+  (define-key org-mode-map (kbd "<f11>") 'org-toggle-inline-images)
+  ;; display image at point
+  (define-key org-mode-map (kbd "C-<f11>") 'ced/org-image-display)
+
+  ;; store link function
+  ;; Having a PROPERTIES drawer with a CUSTOM_ID is recommanded
+  ;; C-c-x p to add a custom property into the current headline
+  (define-key org-mode-map (kbd "C-c l") 'org-store-link)
+
+  ;; cute bullets
+  (setq org-bullets-bullet-list '("●" "○" "■" "◆" "◇" "▲"))
+  (org-bullets-mode)
+
+  ;; Hl-line not really nice in org documents
+  (hl-line-mode -1)
+
+  ;; format for code blocks
+  (setq org-src-preserve-indentation t)
+  (setq org-src-fontify-natively t)
+)
+(add-hook 'org-mode-hook 'ced/org-mode-hook)
+#+END_SRC
