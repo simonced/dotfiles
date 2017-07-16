@@ -479,10 +479,8 @@ If we have a prefix (C-u), we clear the highlight.
 ** Search + Selection related
 #+BEGIN_SRC emacs-lisp
 ;; replace hidden text as well
-(setq search-invisible t)
-
-;; not searching in invisible text with isearch, I leave that to swipper
-(setq isearch-invisible nil)
+;(setq search-invisible t)
+;; the default is 'open and it opens the hidden content if needed
 
 ;; copy selection when done with the mouse
 (setq mouse-drag-copy-region t)
