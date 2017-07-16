@@ -479,9 +479,6 @@ If we have a prefix (C-u), we clear the highlight.
 ;; default answers with y/n
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; freely evaluation code in block_src in org files
-(setq org-confirm-babel-evaluate nil)
-
 ;; White space customization
 ;; source : http://ergoemacs.org/emacs/whitespace-mode.html
 (setq whitespace-display-mappings
@@ -781,6 +778,9 @@ Simply insert some defaults I use all the time in my org files
 #+TITLE: <TODO>
 ")
 )
+
+;; freely evaluation code in block_src in org files
+(setq org-confirm-babel-evaluate nil)
 
 ;; hide source blocks by default
 (setq org-hide-block-startup t)
