@@ -159,7 +159,7 @@ Only the headlines with ':export: t' will have their data exported in html"
   (when (and (equal name "PARAMS") (string-match ":export:\s+t" contents))
 	(let (mycontent)
 	  (setq mycontent (replace-regexp-in-string ":export:.*t\n?" "" contents))
-	  (message mycontent)
+	  ;(message mycontent)
 	  (replace-regexp-in-string ":\\(.*?\\):\\(.*\\)\n?" "<b>\\1</b>:\\2<br>" mycontent)
 	  )
 	)
@@ -173,7 +173,36 @@ Only the headlines with ':export: t' will have their data exported in html"
   (interactive)
   (org-display-inline-images t nil (line-beginning-position) (line-end-position))
   )
+
+
+;; To be used in an org source block for example, like in the sample below
+;; careful, it seems that even simple lists of items are passed as 2-dimension lists
+;; so we need to apply [,0] to extract all rows of the column at index 0
+;; (the first and only data we have and want)
+;; Can be used with more complex tables of data if needed...
+(defun ced/org-highlight-list (list_)
+  " Simply highlight all words from a list.
+Typical use is in an org file, with a named list or table (single column).
+Sample:
+
+#+name: mylist
+- word1
+- word2
+- word3
+- word4
+
+BEGIN_SRC emacs-lisp :var list=mylist[,0]
+(ced/org-highlight-list list)
+END_SRC
+
+Note: The example above might get a little funky with Japanese text, use a table instead of a list can help.
+"
+  (unhighlight-regexp t)				;clear previous highlight if any
+  (highlight-regexp
+       (mapconcat 'identity list_ "\\|")) ;highlight the terms in the list
+  )
 #+END_SRC
+
 ** SQL related
 #+BEGIN_SRC emacs-lisp
 ;; Function that makes the post http request
