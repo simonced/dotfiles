@@ -467,6 +467,22 @@ If we have a prefix (C-u), we clear the highlight.
 
 #+END_SRC
 
+** Text decoding
+*** Base64 -> utf-8
+#+BEGIN_SRC emacs-lisp
+(defun ced/decode-base64-utf8 (start end)
+  "Decodes an utf-8 email file content encoded in base 64.
+Region needed"
+  (interactive "r")
+  (save-excursion
+     (narrow-to-region start end) ; needed because the the base64 decoded region has different boudaries
+     (base64-decode-region start end)
+     (decode-coding-region (point-min) (point-max) 'utf-8)
+     (widen) ; needed to restore the view to full buffer
+	)
+)
+#+END_SRC
+
 * INIT
 ** Global settings
 #+BEGIN_SRC emacs-lisp
