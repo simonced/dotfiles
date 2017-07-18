@@ -58,6 +58,8 @@ Return a list of installed packages or nil for every skipped package."
  'helm
  'swiper
  'flx-ido
+ 'projectile
+ 'helm-projectile
  ;; === Text Utilities ===
  'company
  'company-web
@@ -109,6 +111,10 @@ Return a list of installed packages or nil for every skipped package."
 
 #+RESULTS:
 
+** Projectile related
+#+BEGIN_SRC emacs-lisp
+(projectile-mode)
+#+END_SRC
 ** Helm related
 #+BEGIN_SRC emacs-lisp
 (helm-mode)
@@ -118,6 +124,10 @@ Return a list of installed packages or nil for every skipped package."
 (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
 (global-set-key (kbd "M-x")     'helm-M-x)
 (global-set-key (kbd "C-x f")   'helm-find-files)
+
+;; helm for projectile
+(require 'helm-projectile)
+(helm-projectile-on)
 #+END_SRC
 ** Multiple cursors related
 #+BEGIN_SRC emacs-lisp
@@ -609,11 +619,11 @@ Region needed"
 (global-set-key (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
 
 ;; using helm instead
-										;(global-set-key (kbd "C-x C-f") 'ido-find-file)
+;(global-set-key (kbd "C-x C-f") 'ido-find-file)
 
 ;; ivy (I don't use it...)
-										;(ivy-mode 1) ;; I don't like ivy replacing tags selections in org-mode
-										;(setq ivy-use-virtual-buffers 1)
+;;(ivy-mode 1) ; I don't like ivy replacing tags selections in org-mode
+;;(setq ivy-use-virtual-buffers 1)
 
 ;; search tool: swiper (convinient but slow in large files)
 (global-set-key (kbd "C-S-s") 'swiper)
