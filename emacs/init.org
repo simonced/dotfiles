@@ -282,7 +282,7 @@ http://qiita.com/sanryuu/items/eed79c7b99616e769e67
   )
 #+END_SRC
 
-** Misc
+** TODO Misc                                                 :cleanup:split:
 #+BEGIN_SRC emacs-lisp
 (defun ced/create-tags (dir-name)
   "Create tags file."
@@ -618,13 +618,6 @@ Region needed"
 ;; + cleanup binding
 (global-set-key (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
 
-;; using helm instead
-;(global-set-key (kbd "C-x C-f") 'ido-find-file)
-
-;; ivy (I don't use it...)
-;;(ivy-mode 1) ; I don't like ivy replacing tags selections in org-mode
-;;(setq ivy-use-virtual-buffers 1)
-
 ;; search tool: swiper (convinient but slow in large files)
 (global-set-key (kbd "C-S-s") 'swiper)
 
@@ -633,7 +626,6 @@ Region needed"
 (global-set-key (kbd "C-c C-g p") 'git-gutter:previous-hunk)
 
 ;; GREP RELATED ===
-;; the setting above doesn't seem to work
 (global-set-key (kbd "C-M-g") 'grep)
 
 ;; Number Increment and Decrement ===
@@ -685,6 +677,9 @@ Region needed"
 (global-set-key (kbd "C-c *") 'ced/search-region)
 
 #+END_SRC
+
+#+RESULTS:
+: ced/search-region
 
 * System specific
 ** Windows
@@ -772,7 +767,7 @@ Region needed"
  )
 #+END_SRC
 
-** Org related (big section)
+* TODO Org related (big section)                                    :cleanup:
 #+BEGIN_SRC emacs-lisp
 ;; export code in color
 (require 'htmlize)
