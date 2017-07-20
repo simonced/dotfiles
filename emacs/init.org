@@ -167,11 +167,21 @@ Packages required:
   "Function to init Ivy when I decide to use it."
   (interactive)
   (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  ;; no regexp by default
+  (setq ivy-initial-inputs-alist nil)
   ;; keys
   (global-set-key (kbd "C-x b")   'ivy-switch-buffer)
   (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
   (global-set-key (kbd "M-x")     'counsel-M-x)
   (global-set-key (kbd "C-x f")   'counsel-find-file)
+  ;; integration with other plugins
+  (when (require 'magit nil 'noerror)
+	(setq magit-completing-read-function 'ivy-completing-read)
+	)
+  (when (require 'projectile nil 'noerror)
+	(setq projectile-completion-system 'ivy)
+	)  
   )
 #+END_SRC
 
