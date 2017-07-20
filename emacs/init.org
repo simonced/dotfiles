@@ -115,20 +115,6 @@ Return a list of installed packages or nil for every skipped package."
 #+BEGIN_SRC emacs-lisp
 (projectile-mode)
 #+END_SRC
-** Helm related
-#+BEGIN_SRC emacs-lisp
-(helm-mode)
-;; keys
-(global-set-key (kbd "C-x M-f") 'helm-recentf)
-(global-set-key (kbd "C-x b")   'helm-buffers-list)
-(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-(global-set-key (kbd "M-x")     'helm-M-x)
-(global-set-key (kbd "C-x f")   'helm-find-files)
-
-;; helm for projectile
-(require 'helm-projectile)
-(helm-projectile-on)
-#+END_SRC
 ** Multiple cursors related
 #+BEGIN_SRC emacs-lisp
 (require 'multiple-cursors)
@@ -146,12 +132,56 @@ Return a list of installed packages or nil for every skipped package."
 ;; Completion related
 (global-set-key (kbd "TAB") 'company-indent-or-complete-common)
 #+END_SRC
+** Helm OR Ivy related
+Because I want to try/compare Helm with Ivy, here I define 2 functions to lunch one setup or the other.
+*** Helm part
+Packages required:
+- helm
+- helm-projectile
+
+#+BEGIN_SRC emacs-lisp
+(defun ced/i-use-helm ()
+  "Function to init Helm when I decide to use it."
+  (interactive)
+  (helm-mode)
+  ;; keys
+  (global-set-key (kbd "C-x M-f") 'helm-recentf)
+  (global-set-key (kbd "C-x b")   'helm-buffers-list)
+  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
+  (global-set-key (kbd "M-x")     'helm-M-x)
+  (global-set-key (kbd "C-x f")   'helm-find-files)
+
+  ;; helm for projectile
+  (require 'helm-projectile)
+  (helm-projectile-on)
+  )
+#+END_SRC
+
+*** Ivy part
+Packages required:
+- ivy
+- counsel
+
+#+BEGIN_SRC emacs-lisp
+(defun ced/i-use-ivy ()
+  "Function to init Ivy when I decide to use it."
+  (interactive)
+  (ivy-mode)
+  ;; keys
+  (global-set-key (kbd "C-x b")   'ivy-switch-buffer)
+  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
+  (global-set-key (kbd "M-x")     'counsel-M-x)
+  (global-set-key (kbd "C-x f")   'counsel-find-file)
+  )
+#+END_SRC
+
 * My functions
 #+BEGIN_QUOTE
 Trying to be consistent, all functions should start with "ced/"
 #+END_QUOTE
 ** Org related
 #+BEGIN_SRC emacs-lisp
+
 ;; same but used to insert timestamp in org files at export
 ;; used in conjonction with
 ;; -*- org-export-babel-evaluate: t -*-
@@ -169,7 +199,7 @@ Only the headlines with ':export: t' will have their data exported in html"
   (when (and (equal name "PARAMS") (string-match ":export:\s+t" contents))
 	(let (mycontent)
 	  (setq mycontent (replace-regexp-in-string ":export:.*t\n?" "" contents))
-	  ;(message mycontent)
+	  ;; (message mycontent)
 	  (replace-regexp-in-string ":\\(.*?\\):\\(.*\\)\n?" "<b>\\1</b>:\\2<br>" mycontent)
 	  )
 	)
@@ -195,7 +225,7 @@ Only the headlines with ':export: t' will have their data exported in html"
 Typical use is in an org file, with a named list or table (single column).
 Sample:
 
-#+name: mylist
+,#+name: mylist
 - word1
 - word2
 - word3
@@ -210,7 +240,28 @@ Note: The example above might get a little funky with Japanese text, use a table
   (unhighlight-regexp t)				;clear previous highlight if any
   (highlight-regexp
        (mapconcat 'identity list_ "\\|")) ;highlight the terms in the list
+  (mapconcat 'identity list_ ",")		  ;return the list of keywords for external usage
   )
+
+
+;; As of org-mode 9, the value above has another behavior when set to `nil`.
+;; Code blocks will all be exported, despite setting :exports results at code blocks.
+;; The solution is to leave that value to `t` and use the header property below at the top of document:
+;; #+PROPERTY: header-args :eval never-export
+;; simple bootstrap header for when I start with a new org file
+(defun ced/org-new ()
+  "
+Simply insert some defaults I use all the time in my org files
+"
+  (interactive)
+  (save-excursion)
+  (insert "#+HTML_HEAD: <meta charset='utf-8'></meta>
+,#+HTML_HEAD: <link rel=\"stylesheet\" href=\"https://rawgit.com/simonced/css/master/markdown.css\" />
+,#+PROPERTY: header-args :eval never-export
+,#+TITLE: <TODO>
+")
+)
+
 #+END_SRC
 
 ** SQL related
@@ -635,7 +686,7 @@ Region needed"
 ;; My google translate function
 (global-set-key "\C-cg" 'ced/google-translate-jp-en)
 
-;; mappings to swap lines
+;; mappings to swap lines ===
 (global-set-key
  (kbd "M-<up>")
  (lambda ()
@@ -655,31 +706,37 @@ Region needed"
    )
  )
 
-;; windows/splits related
+;; windows/splits related ===
 (global-set-key (kbd "C-x |") 'toggle-window-split)
 
-;; White space mode!
+;; White space mode! ===
 (global-set-key (kbd "C-c w") 'whitespace-mode)
 
-;; my commenting
+;; my commenting ===
 (global-set-key (kbd "C-M-;") 'ced/comment-line)
 
-;; insert-current-date-ymd 関数
+;; insert-current-date-ymd 関数 ===
 (global-set-key (kbd "C-c t") 'ced/insert-current-date-ymd)
 
-;; duplicate lines
+;; duplicate lines ===
 (global-set-key (kbd "C-d") 'ced/duplicate-line)
 
-;; joining lines like in VIM
+;; joining lines like in VIM ===
 (global-set-key (kbd "S-<delete>") 'ced/join-lines)
 
-;; search and highlight like I do in Vim
+;; search and highlight like I do in Vim ===
 (global-set-key (kbd "C-c *") 'ced/search-region)
+
+;; org related ===
+;; list agenda
+(global-set-key (kbd "C-c a a") 'org-agenda-list)
+
+;; List tasks
+(global-set-key (kbd "C-c a t") 'org-todo-list)
 
 #+END_SRC
 
 #+RESULTS:
-: ced/search-region
 
 * System specific
 ** Windows
@@ -768,40 +825,10 @@ Region needed"
 #+END_SRC
 
 * TODO Org related (big section)                                    :cleanup:
+Required packages:
+- org-bullets
+
 #+BEGIN_SRC emacs-lisp
-;; export code in color
-(require 'htmlize)
-;(setq org-html-htmlize-output-type 'css)
-
-;; no auto export of blocks, it's heavy when 3 or 4 plantuml are present in the same document
-;; it's better to C-c C-c the block manually to generate the result when needed...
-;; only needed for org 8, since org 9 we need another method, see below
-(when  (version< (org-version) "9")
-  (lambda ()
-	(setq org-export-babel-evaluate nil)
-	)
-  )
-
-;; As of org-mode 9, the value above has another behavior when set to `nil`.
-;; Code blocks will all be exported, despite setting :exports results at code blocks.
-;; The solution is to leave that value to `t` and use the header property below at the top of document:
-;; #+PROPERTY: header-args :eval never-export
-;; simple bootstrap header for when I start with a new org file
-(defun ced/org-new ()
-  "
-Simply insert some defaults I use all the time in my org files
-"
-  (interactive)
-  (save-excursion)
-  (insert "#+HTML_HEAD: <meta charset='utf-8'></meta>
-#+HTML_HEAD: <link rel=\"stylesheet\" href=\"https://rawgit.com/simonced/css/master/markdown.css\" />
-#+PROPERTY: header-args :eval never-export
-#+TITLE: <TODO>
-")
-)
-
-;; freely evaluation code in block_src in org files
-(setq org-confirm-babel-evaluate nil)
 
 ;; hide source blocks by default
 (setq org-hide-block-startup t)
@@ -809,8 +836,6 @@ Simply insert some defaults I use all the time in my org files
 ;; start org files in indent minor mode (a bit cleaner to look at)
 (setq org-startup-indented t)
 
-;; closing code blocks by default, like outlines
-;; (setq org-hide-block-startup t)
 ;; having code blocs in color in org files
 (setq org-src-fontify-natively t)
 
@@ -828,13 +853,27 @@ Simply insert some defaults I use all the time in my org files
 	  org-todo-keywords '((sequence "TODO" "WIP" "ONHOLD" "DONE"))
 	  org-todo-keyword-faces '(("WIP" . (:foreground "orange" :weight bold)) ("ONHOLD" . (:foreground "orange" :weight bold))))
 
-;; list agenda
-(global-set-key (kbd "C-c a a") 'org-agenda-list)
+;; we insert relative link to files
+(setq org-link-file-path-type 'relative)
 
-;; List tasts
-(global-set-key (kbd "C-c a t") 'org-todo-list)
+;; we don't want the exported data in the kill ring
+(setq org-export-copy-to-kill-ring nil)
 
-;; Disabling helm when setting tags in org
+;; default to 4 headlines of export
+(setq org-export-headline-levels 4)
+
+;; no numbers by default at export
+(setq org-export-with-section-numbers nil)
+
+;; no postamble by default
+(setq org-export-html-postamble nil)
+
+;; format for code blocks
+(setq org-src-preserve-indentation t)
+(setq org-src-fontify-natively t)
+
+
+;; Disabling helm when setting tags in org >>>
 (defun kk/org-set-tags-no-helm (orig-func &rest args)
   "Run org-set-tags without helm."
   (if (boundp 'helm-mode)
@@ -850,6 +889,58 @@ Simply insert some defaults I use all the time in my org files
 
 (if (not (version< emacs-version "24.4"))
   (advice-add 'org-set-tags :around 'kk/org-set-tags-no-helm))
+;; <<<
+
+
+;; Disabling ivy when setting tags in org >>>
+(defun kk/org-set-tags-no-ivy (orig-func &rest args)
+  "Run org-set-tags without ivy."
+  (if (boundp 'ivy-mode)
+      (let ((orig-ivy-mode ivy-mode))
+	(unwind-protect
+	    (progn
+	      (ivy-mode 0)
+	      (apply orig-func args)
+	      )
+	  (ivy-mode (if orig-ivy-mode 1 0))))
+    (apply orig-func args)
+    ))
+
+(if (not (version< emacs-version "24.4"))
+  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-ivy))
+;; <<<
+
+
+;; babel related >>>
+
+;; no auto export of blocks, it's heavy when 3 or 4 plantuml are present in the same document
+;; it's better to C-c C-c the block manually to generate the result when needed...
+;; only needed for org 8, since org 9 we need another method, see below
+(when  (version< (org-version) "9")
+  (lambda ()
+    (setq org-export-babel-evaluate nil)
+	)
+)
+
+;; freely evaluation code in block_src in org files
+(setq org-confirm-babel-evaluate nil)
+
+;; support for shell command parameters in babel blocks
+;; found at http://emacs.stackexchange.com/a/19301
+(require 'ob-sh)
+(defadvice org-babel-sh-evaluate (around set-shell activate)
+  "Add header argument :shcmd that determines the shell to be called."
+  (let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
+	ad-do-it
+	))
+
+;; Other libs like obp-hp to use php in babel code blocks
+;; (require 'gnuplot-mode)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (sh . t) (ruby . t) (js . t) (elixir . t))) ;(gnuplot . t)
+;; <<<
+
 
 ;; >>>
 ;; prevents nilTODO to be exported in HTML for headlines with TODO keywords in the TOC
@@ -867,36 +958,18 @@ Simply insert some defaults I use all the time in my org files
 ;;   (advice-add 'org-html--todo :around 'ced/org-html--todo))
 ;; <<< NOT NEEDED IN LAST ORG VERSION (ok in my current version 9.0.9)
 
+
 (defun ced/org-mode-hook ()
-  ;; babel related
-  
-  ;; Other libs like obp-hp to use php in babel code blocks
-  ;; (require 'gnuplot-mode)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (shell . t) (ruby . t) (js . t) (elixir . t))) ;(gnuplot . t)
+"org-mode hook"
 
-  ;; support for shell command parameters in babel blocks
-  ;; found at http://emacs.stackexchange.com/a/19301
-  (require 'ob-sh)
-  (defadvice org-babel-sh-evaluate (around set-shell activate)
-	"Add header argument :shcmd that determines the shell to be called."
-	(let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
-	  ad-do-it
-	  ))
-  
-  ;; we insert relative link to files
-  (setq org-link-file-path-type 'relative)
+  ;; cute bullets
+  (setq org-bullets-bullet-list '("●" "○" "■" "◆" "◇" "▲"))
+  (org-bullets-mode)
 
-  ;; we don't want the exported data in the kill ring
-  (setq org-export-copy-to-kill-ring nil)
-  ;; default to 4 headlines of export
-  (setq org-export-headline-levels 4)
-  ;; no numbers by default at export
-  (setq org-export-with-section-numbers nil)
-  ;; no postamble by default
-  (setq org-export-html-postamble nil)
-  
+  ;; export code in color
+  (require 'htmlize)
+  ;;(setq org-html-htmlize-output-type 'css)
+
   ;; flyspell in org mode files? Not so useful
   ;; (flyspell-mode 1)
 
@@ -910,19 +983,25 @@ Simply insert some defaults I use all the time in my org files
 
   ;; remapping a key to clear highlights
   (define-key org-mode-map (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
-  ;; Exporting into HTML
+
+
+  ;; Exporting into HTML >>>
   (define-key org-mode-map (kbd "<f12>") '(lambda ()
 					    (interactive)
 					    (org-html-export-to-html))
     )
+
   (define-key org-mode-map (kbd "C-<f12>") '(lambda ()
 					      (interactive)
 					      ;; only exports the current subtree
 					      (org-html-export-to-html nil t))
     )
+  ;; <<<
+
 
   ;; toggle images in org buffers
   (define-key org-mode-map (kbd "<f11>") 'org-toggle-inline-images)
+
   ;; display image at point
   (define-key org-mode-map (kbd "C-<f11>") 'ced/org-image-display)
 
@@ -930,17 +1009,7 @@ Simply insert some defaults I use all the time in my org files
   ;; Having a PROPERTIES drawer with a CUSTOM_ID is recommanded
   ;; C-c-x p to add a custom property into the current headline
   (define-key org-mode-map (kbd "C-c l") 'org-store-link)
-
-  ;; cute bullets
-  (setq org-bullets-bullet-list '("●" "○" "■" "◆" "◇" "▲"))
-  (org-bullets-mode)
-
-  ;; Hl-line not really nice in org documents
-  (hl-line-mode -1)
-
-  ;; format for code blocks
-  (setq org-src-preserve-indentation t)
-  (setq org-src-fontify-natively t)
 )
+
 (add-hook 'org-mode-hook 'ced/org-mode-hook)
 #+END_SRC
