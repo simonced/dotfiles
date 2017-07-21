@@ -131,6 +131,10 @@ Return a list of installed packages or nil for every skipped package."
 
 ;; Completion related
 (global-set-key (kbd "TAB") 'company-indent-or-complete-common)
+
+;; no company with php-mode, because it switches to tags completion
+;; and I don't use tags with Emacs anyway...
+(add-hook 'php-mode-hook '(lambda () (company-mode -1)))
 #+END_SRC
 ** Helm OR Ivy related
 Because I want to try/compare Helm with Ivy, here I define 2 functions to lunch one setup or the other.
