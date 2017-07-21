@@ -83,7 +83,7 @@ Return a list of installed packages or nil for every skipped package."
  'rainbow-delimiters
  'rainbow-mode
  'eldoc
- ;; 'paredit
+ 'paredit
  ;; 'dot-mode
  ;; === Org related ===
  'org
@@ -825,13 +825,13 @@ Region needed"
 
 (defun lisp-like-init ()
   "Not only Elisp"
-;;  (enable-paredit-mode)
+  (enable-paredit-mode)
   (rainbow-delimiters-mode)
   )
 
 (defun elisp-init ()
   "Elisp specific"
-;;  (eldoc-mode)
+  (eldoc-mode)
   )
 
 (add-hook
