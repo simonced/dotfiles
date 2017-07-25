@@ -135,6 +135,10 @@ Return a list of installed packages or nil for every skipped package."
 ;; no company with php-mode, because it switches to tags completion
 ;; and I don't use tags with Emacs anyway...
 (add-hook 'php-mode-hook '(lambda () (company-mode -1)))
+
+;; using company to complete org keywords?
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-capf))
 #+END_SRC
 ** Helm OR Ivy related
 Because I want to try/compare Helm with Ivy, here I define 2 functions to lunch one setup or the other.
@@ -154,6 +158,7 @@ Packages required:
   (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
   (global-set-key (kbd "M-x")     'helm-M-x)
   (global-set-key (kbd "C-x f")   'helm-find-files)
+  (global-set-key (kbd "C-c b")   'helm-bookmarks)
 
   ;; helm for projectile
   (require 'helm-projectile)
@@ -1028,4 +1033,16 @@ Required packages:
 )
 
 (add-hook 'org-mode-hook 'ced/org-mode-hook)
+#+END_SRC
+
+** Capture
+#+BEGIN_QUOTE
+*Memo:* the ~'org-director~ is "org" by default (in the user directory).
+#+END_QUOTE
+
+Notes file setup sample: /(will set a file notes.org in 'org-directory folder)/
+
+#+BEGIN_SRC emacs-lisp
+(setq org-default-notes-file (concat org-directory "/notes.org"))
+(global-set-key (kbd "C-c c") 'org-capture)
 #+END_SRC
