@@ -1,7 +1,7 @@
 #+HTML_HEAD: <meta charset='utf-8'></meta>
 #+HTML_HEAD: <link rel="stylesheet" href="https://rawgit.com/simonced/css/master/markdown.css" />
 #+PROPERTY: header-args :eval never-export
-#+STARTUP: nohideblocks
+#+STARTUP: content
 #+TITLE: My Emacs configuration file
 
 * Before starting
