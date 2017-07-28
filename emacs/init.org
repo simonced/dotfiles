@@ -1,10 +1,13 @@
 #+HTML_HEAD: <meta charset='utf-8'></meta>
 #+HTML_HEAD: <link rel="stylesheet" href="https://rawgit.com/simonced/css/master/markdown.css" />
 #+PROPERTY: header-args :eval never-export
-#+STARTUP: content
+#+STARTUP: content showblocks
 #+TITLE: My Emacs configuration file
 
 * Before starting
+:PROPERTIES:
+:CUSTOM_ID: before-starting
+:END:
 Here is the way I call that config on local computers:
 
 : (package-initialize)
@@ -198,6 +201,14 @@ Packages required:
 #+BEGIN_QUOTE
 Trying to be consistent, all functions should start with "ced/"
 #+END_QUOTE
+** My Diary lib
+This requires that ~load-path~ is pointing to the correct directory.\\
+See [[#before-starting][Before starting]] section for reference.
+
+#+BEGIN_SRC emacs-lisp
+;; my new diary "package" (move in my main config once working as I want)
+(load-library "ced-diary.el")
+#+END_SRC
 ** Org related
 #+BEGIN_SRC emacs-lisp
 
@@ -282,7 +293,6 @@ Simply insert some defaults I use all the time in my org files
 )
 
 #+END_SRC
-
 ** SQL related
 #+BEGIN_SRC emacs-lisp
 ;; Function that makes the post http request
@@ -584,6 +594,11 @@ Region needed"
 	(newline-mark 10 [182 10]) ; 10 LINE FEED
 	(tab-mark 9 [9655 9] [92 9]) ; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」
 	))
+
+;; better scrolling
+;; found here: https://ogbe.net/emacsconfig.html
+(setq scroll-step            1
+      scroll-conservatively  10000)
 
 ;; scroll margin
 (setq scroll-margin 3)
