@@ -211,6 +211,8 @@ See [[#before-starting][Before starting]] section for reference.
 #+END_SRC
 ** Org related
 #+BEGIN_SRC emacs-lisp
+;; to use shell as code blocks, a lib in my dotfiels/emacs folder has to be loaded
+(load-library "ob-shell")
 
 ;; same but used to insert timestamp in org files at export
 ;; used in conjonction with
@@ -1094,4 +1096,7 @@ Notes file setup sample: /(will set a file notes.org in 'org-directory folder)/
 #+BEGIN_SRC emacs-lisp
 (setq org-default-notes-file (concat org-directory "/notes.org"))
 (global-set-key (kbd "C-c c") 'org-capture)
+
+;; TODO add my memo files from Dropbox here
+
 #+END_SRC
