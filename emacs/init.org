@@ -1,7 +1,7 @@
 #+HTML_HEAD: <meta charset='utf-8'></meta>
 #+HTML_HEAD: <link rel="stylesheet" href="https://rawgit.com/simonced/css/master/markdown.css" />
 #+PROPERTY: header-args :eval never-export
-#+STARTUP: content showblocks
+#+STARTUP: content
 #+TITLE: My Emacs configuration file
 
 * Before starting
@@ -903,7 +903,7 @@ Required packages:
 #+BEGIN_SRC emacs-lisp
 
 ;; hide source blocks by default
-(setq org-hide-block-startup t)
+;; (setq org-hide-block-startup t)
 
 ;; start org files in indent minor mode (a bit cleaner to look at)
 (setq org-startup-indented t)
@@ -1098,5 +1098,9 @@ Notes file setup sample: /(will set a file notes.org in 'org-directory folder)/
 (global-set-key (kbd "C-c c") 'org-capture)
 
 ;; TODO add my memo files from Dropbox here
-
+(setq org-capture-templates
+      '(("n" "Notes (Dropbx)"
+		 entry
+		 (file "~/Dropbox/_mydoc/notes.org")
+		 "* %?")))
 #+END_SRC
