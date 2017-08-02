@@ -723,10 +723,10 @@ Region needed"
 
 ** Default scratch buffer
 #+BEGIN_SRC emacs-lisp
-(setq initial-major-mode 'org-mode)
+;; (setq initial-major-mode 'org-mode)
 (setq initial-scratch-message "\
-# C'est mon buffer org par default.
-# Il n'est pas sauvegarde! Faire attention ;)
+;;; C'est mon buffer e-lisp par default.
+;;; Il n'est pas sauvegarde! Faire attention ;)
 ")
 #+END_SRC
 
