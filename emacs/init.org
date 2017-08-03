@@ -94,6 +94,7 @@ Return a list of installed packages or nil for every skipped package."
  'org-bullets
  ;; === Tools ===
  'exec-path-from-shell
+ 'avy
  ;; 'powerline
  ;; 'folding
  ;; 'nyan-mode
@@ -220,14 +221,14 @@ See [[#before-starting][Before starting]] section for reference.
 ;; at the top of the related files
 ;; so it exports everything automatically
 (defun ced/org-today ()
-  (interactive)
+  ;; (interactive)
   (print (format "Update : %s" (format-time-string "%F" nil)))
   )
 
 
 (defun ced/org-drawer-format (name contents)
-  "Formating drawer entries at html export.
-Only the headlines with ':export: t' will have their data exported in html"
+  "Formating `PARAMS` drawers entries at html export.
+Only the drawers with ':export: t' will have their data exported in html"
   (when (and (equal name "PARAMS") (string-match ":export:\s+t" contents))
 	(let (mycontent)
 	  (setq mycontent (replace-regexp-in-string ":export:.*t\n?" "" contents))
@@ -805,6 +806,9 @@ Region needed"
 
 ;; search and highlight like I do in Vim ===
 (global-set-key (kbd "C-c *") 'ced/search-region)
+
+;; navigation related ===
+(global-set-key (kbd "C-:") 'avy-goto-char)
 
 ;; org related ===
 ;; list agenda
