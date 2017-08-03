@@ -731,6 +731,43 @@ Region needed"
 ")
 #+END_SRC
 
+** Abbrev
+Finally trying to use abgrev, I need those!
+
+#+BEGIN_SRC elisp
+;; utility function
+(defun ced/abbrev-no-space ()
+  "Inhibits the insertion of the abbrev trigger character (space)."
+  t
+  )
+;; we put a property to t in our "function/object"
+(put 'ced/abbrev-no-space 'no-self-insert t)
+
+
+(defun ced/abbrev-today ()
+  (insert (format-time-string "%F" nil))
+  )
+
+;; ==================================================
+(clear-abbrev-table global-abbrev-table)
+
+
+(define-abbrev-table 'global-abbrev-table
+  '(
+	("todayy" "" ced/abbrev-today)))
+
+
+(define-abbrev-table 'web-mode-abbrev-table
+  '(
+	("clog" "console.log(" ced/abbrev-no-space)))
+
+
+(setq-default abbrev-mode t)
+(setq save-abbrevs nil)
+#+END_SRC
+
+OMG, I see quite some potential in there!
+
 ** Shortcuts
 #+BEGIN_SRC emacs-lisp
 ;; Moving from window to window
