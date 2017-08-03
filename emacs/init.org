@@ -734,7 +734,7 @@ Region needed"
 ** Abbrev
 Finally trying to use abgrev, I need those!
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
 ;; utility function
 (defun ced/abbrev-no-space ()
   "Inhibits the insertion of the abbrev trigger character (space)."
