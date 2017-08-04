@@ -478,9 +478,10 @@ Point will be moved after the closing ruby tag."
 
 	;; We check it we are on a blank character
 	(if (or
-		 (char-equal ?\s  (char-after))
-		 (char-equal ?\n (char-after))
-		 (char-equal ?\t (char-after))
+		 (eolp)
+		 (char-equal ?\s   (char-after))
+		 (char-equal ?\n   (char-after))
+		 (char-equal ?\t   (char-after))
 		 )
 		(insert today)
 	  (progn
@@ -499,7 +500,7 @@ Point will be moved after the closing ruby tag."
 		)
 	  )
 	)
-  ) 
+  )
 
 ;; ======================================================================
 
