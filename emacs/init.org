@@ -676,10 +676,10 @@ Region needed"
 ** Display related
 #+BEGIN_SRC emacs-lisp
 ;; supposed to help with my font problems (symbola font required)
-;(set-fontset-font "fontset-default" '(#x25A0 . #x265F)  '("Symbola" . "iso10646-1") nil 'prepend)
+;;(set-fontset-font "fontset-default" '(#x25A0 . #x265F)  '("Symbola" . "iso10646-1") nil 'prepend)
 
 ;; Maximum buffer highlighting!
-(defconst font-lock-maximum-decoration t)
+;;(defconst font-lock-maximum-decoration t)
 
 ;; No Scroll bars
 (scroll-bar-mode -1)
@@ -990,7 +990,8 @@ Back to normal for now:
  )
 #+END_SRC
 
-* TODO Org related (big section)                                    :cleanup:
+* Org related (big section)
+** TODO Global settings                                            :cleanup:
 Required packages:
 - org-bullets
 
@@ -1013,6 +1014,8 @@ Required packages:
 
 ;; we dont need the footer at html export
 (setq org-export-html-postamble nil)
+
+(setq org-ellipsis " ⤵")
 
 ;; tasks entries
 (setq org-log-done t
