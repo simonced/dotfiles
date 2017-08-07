@@ -395,11 +395,11 @@ Point will be moved after the closing ruby tag."
   (save-excursion
 	(insert "<ruby>")
 
-	(search-forward "(")
+	(search-forward "(" (line-end-position))
 	(ced/ruby-make-rp)
 
 	(insert "<rt>")
-	(search-forward ")")
+	(search-forward ")" (line-end-position))
 	(backward-char)
 	(insert "</rt>")
 
