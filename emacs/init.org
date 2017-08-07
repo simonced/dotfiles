@@ -80,6 +80,7 @@ Return a list of installed packages or nil for every skipped package."
  'emmet-mode
  'js2-mode
  ;; === Elixir relater ===
+ 'elixir-mode
  'alchemist
  'ob-elixir
  ;; === Lisp related ===
