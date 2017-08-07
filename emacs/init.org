@@ -1019,7 +1019,9 @@ Required packages:
 ;; we dont need the footer at html export
 (setq org-export-html-postamble nil)
 
-(setq org-ellipsis " +")
+(setq org-ellipsis " +") 
+;; another good option would be "ARROW POINTING RIGHTWARDS THEN CURVING DOWNWARDS"
+;; but only if a good font containing it is available...
 
 ;; tasks entries
 (setq org-log-done t
