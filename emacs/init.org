@@ -57,6 +57,8 @@ Return a list of installed packages or nil for every skipped package."
 #+BEGIN_SRC emacs-lisp
 ;; simply add package names to the list
 (ensure-package-installed
+ ;; === loading utility ===
+ 'use-package
  ;; === UI utilities ===
  'helm
  'swiper
@@ -920,6 +922,12 @@ Back to normal for now:
 (global-set-key (kbd "M-/") 'hippie-expand)
 #+END_SRC
 
+** Specific file types
+SII files:
+#+BEGIN_SRC emacs-lisp
+(use-package sii
+  :mode ("\\.sii\\'" . sii-mode))
+#+END_SRC
 * System specific
 ** Windows
 #+BEGIN_SRC emacs-lisp
