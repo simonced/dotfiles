@@ -1158,7 +1158,7 @@ Required packages:
 "org-mode hook"
 
   ;; cute bullets
-  (setq org-bullets-bullet-list '("●" "○" "■" "◆" "◇" "▲"))
+  (setq org-bullets-bullet-list '("●" "○" "■" "🞎" "▲" "🛆" "◆" "◇"))
   (org-bullets-mode)
 
   ;; export code in color
