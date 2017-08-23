@@ -103,6 +103,7 @@ Return a list of installed packages or nil for every skipped package."
  ;; 'nyan-mode
  ;; === Themes ===
  'color-theme
+ 'apropospriate-theme
  'cyberpunk-theme
  )
 
@@ -925,8 +926,10 @@ Back to normal for now:
 ** Specific file types
 SII files:
 #+BEGIN_SRC emacs-lisp
-(use-package sii
-  :mode ("\\.sii\\'" . sii-mode))
+(add-hook 'after-init-hook
+		  (lambda ()
+            (use-package sii
+              :mode ("\\.sii\\'" . sii-mode))))
 #+END_SRC
 * System specific
 ** Windows
