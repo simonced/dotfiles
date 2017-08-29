@@ -636,7 +636,31 @@ Region needed"
 	)
 )
 #+END_SRC
+** Text underlining
+Underlining text with point on the line will turn like so: /(~|~ is point)/
 
+#+BEGIN_EXAMPLE
+This is a demo|
+
+This is a demo
+==============
+|
+#+END_EXAMPLE
+
+#+BEGIN_SRC emacs-lisp
+(defun ced/underline-current ()
+  "Underline a text with = signs. 
+Point on line to underline."
+  (interactive)
+  (let ((size (- (line-end-position) (line-beginning-position))))
+	;; (message (format "size: %s" size))
+	(end-of-line)
+	(newline)
+	(insert (make-string size ?=))
+	(newline)
+	)
+  )
+#+END_SRC
 * INIT
 ** Global settings
 #+BEGIN_SRC emacs-lisp
