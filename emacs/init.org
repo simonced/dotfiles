@@ -1238,7 +1238,7 @@ Required packages:
 
 ** Capture
 #+BEGIN_QUOTE
-*Memo:* the ~'org-director~ is "org" by default (in the user directory).
+*Memo:* the ~'org-directory~ is "org" by default (in the user directory).
 #+END_QUOTE
 
 Notes file setup sample: /(will set a file notes.org in 'org-directory folder)/
