@@ -208,15 +208,18 @@ Trying to be consistent, all functions should start with "ced/"
 #+END_QUOTE
 ** Fonts related
 #+BEGIN_SRC emacs-lisp
-  ;; setting fallback font name for symbols
-  (setq unicode-fallback "Symbola")
+;; setting fallback font name for symbols
+(setq unicode-fallback "Symbola")
 
-  ;; setting default font for unicode symbols if present
+(defun ced/fix-fonts ()
+  "setting default font for unicode symbols if present"
   (if (find-font (font-spec :name unicode-fallback))
       (set-fontset-font "fontset-default"
-			'unicode
-			(font-spec :name unicode-fallback))
-    (message "Symbola font is missing! If emacs becomes slow, install it!"))
+						'unicode
+						(font-spec :name unicode-fallback))
+    (message "Symbola font is missing! If emacs becomes slow, install it!")))
+
+;; (ced/fix-fonts)
 #+END_SRC
 ** My Diary lib
 This requires that ~load-path~ is pointing to the correct directory.\\
