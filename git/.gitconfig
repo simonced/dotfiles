@@ -13,4 +13,4 @@
 	files = show --pretty=format: --name-status
 	today = log --name-only --pretty=format: --since=8am
 	st = status -s
-	g = grep -n --heading --break
+	g = grep -nI --heading --break
