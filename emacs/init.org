@@ -1039,8 +1039,11 @@ SII files:
   )
 
 (add-hook
- 'emacs-lisp-mode-hook
- (lambda () (lisp-like-init) (elisp-init))
+ 'emacs-lisp-mode-hook (lambda () (lisp-like-init) (elisp-init))
+ )
+
+(add-hook
+ 'clojure-mode-hook (lambda () (lisp-like-init))
  )
 #+END_SRC
 
