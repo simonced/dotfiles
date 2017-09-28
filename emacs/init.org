@@ -1226,6 +1226,14 @@ Required packages:
     )
   ;; <<<
 
+  ;; Exporting to TEXT >>>
+  (define-key org-mode-map (kbd "C-S-<f12>") '(lambda ()
+					      (interactive)
+					      ;; only exports the current subtree
+					      (org-export-to-buffer 'ascii "*Email*" nil t))
+    )
+  ;; <<<
+
 
   ;; toggle images in org buffers
   (define-key org-mode-map (kbd "<f11>") 'org-toggle-inline-images)
