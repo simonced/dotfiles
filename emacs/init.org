@@ -1002,6 +1002,12 @@ SII files:
 ;;			(php-eldoc-enable)
 			(emmet-mode)
 			(rainbow-delimiters-mode)
+			(define-key web-mode-map 
+			  (kbd "<S-return>")
+			  '(lambda ()
+				 (interactive)
+				 (insert "<br>")
+				 (newline)))
 		  ))
 
 ;;(add-hook 'css-mode-hook
