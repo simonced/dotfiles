@@ -310,6 +310,7 @@ Simply insert some defaults I use all the time in my org files
   (insert "#+HTML_HEAD: <meta charset='utf-8'></meta>
 ,#+HTML_HEAD: <link rel=\"stylesheet\" href=\"https://rawgit.com/simonced/css/master/markdown.css\" />
 ,#+PROPERTY: header-args :eval never-export
+,#+OPTIONS: num:nil \\n:t
 ,#+TITLE: <TODO>
 ")
 )
@@ -846,6 +847,10 @@ OMG, I see quite some potential in there!
 ;; Number Increment and Decrement ===
 (global-set-key (kbd "C-c +") 'ced/increment-number-at-point)
 (global-set-key (kbd "C-c -") 'ced/decrement-number-at-point)
+
+;; Killing words with C-w like I do with Vim ===
+(global-set-key (kbd "C-w") 'backward-kill-word)
+(global-set-key (kbd "C-c C-k") 'kill-region)
 
 ;; My google translate function
 (global-set-key "\C-cg" 'ced/google-translate-jp-en)
