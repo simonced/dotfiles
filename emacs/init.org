@@ -147,6 +147,9 @@ Return a list of installed packages or nil for every skipped package."
 ;; using company to complete org keywords?
 (eval-after-load 'company
   '(add-to-list 'company-backends 'company-capf))
+
+;; setting org-mode as dabbrev like coding so completions are case-sensitive.
+(add-to-list 'company-dabbrev-code-modes 'org-mode)
 #+END_SRC
 ** Helm OR Ivy related
 Because I want to try/compare Helm with Ivy, here I define 2 functions to lunch one setup or the other.
