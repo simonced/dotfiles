@@ -1,0 +1,9 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_1='/home/ced/.vim'
+let g:netrw_dirhist_2='/Users/simonced/Dropbox/httpdocs/francais_v2/partials'
+let g:netrw_dirhist_3='C:\Users\Simon\Documents\仕事\_作業の修正ファイル一覧'
+let g:netrw_dirhist_4='C:/Users/Simon/Documents/仕事/_作業の修正ファイル一覧'
+let g:netrw_dirhist_5='C:/Users/Simon/Documents/仕事'
+let g:netrw_dirhist_6='C:/Users/Simon/Dropbox/_vim/vim-simonced'
+let g:netrw_dirhist_7='C:/Users/Simon/Dropbox/_vim/vim-simonced/ftplugin'

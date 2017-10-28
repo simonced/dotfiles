@@ -1,0 +1,134 @@
+snippet return "Makes a button to return"
+<div class="text-right"><a class="btn btn-warning" href="${2}">${1}</a></div>${0}
+endsnippet
+
+snippet submit "Adds a centered submit button"
+<div class="text-center">
+	<input class="btn btn-primary${1}" type="submit" value="送信">
+</div>${0}
+endsnippet
+
+snippet group "Makes a blank input group"
+<div class="form-group">
+	<label>${1}</label>
+	<input name="${2}" class="form-control" type="text">
+</div>${0}
+endsnippet
+
+snippet pagination "Generate sample pagination"
+<ul class="pagination">
+	<li>
+		<a href="#" aria-label="Previous">
+		<span aria-hidden="true">&laquo;</span>
+		</a>
+	</li>
+	<li class="active"><a href="#">1</a></li>
+	<li><a href="#">2</a></li>
+	<li><a href="#">3</a></li>
+	<li><a href="#">4</a></li>
+	<li><a href="#">5</a></li>
+	<li>
+		<a href="#" aria-label="Next">
+		<span aria-hidden="true">&raquo;</span>
+		</a>
+	</li>
+</ul>
+endsnippet
+
+snippet select "Generates a Select TAG"
+<select name="${1}" class="form-control">
+	<option value="${2}">${3}</option>
+</select>
+endsnippet
+
+snippet panel "Generate a simple panel"
+<div class="panel panel-default">
+	<div class="panel-heading">${1}</div>
+	<div class="panel-body">${2}</div>
+</div>
+endsnippet
+
+snippet textarea "Makes a text area"
+<textarea class="form-control" name="${1}" rows="5"></textarea>
+endsnippet
+
+snippet table "Generate a simple table"
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>${1}</th>
+			<th>${2}</th>
+			<th>${3}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>${0}</td>
+		</tr>
+	</tbody>
+</table>
+endsnippet
+
+snippet 2cols "Makes 2 cols"
+<div class="row">
+	<div class="col-sm-6">
+		${1}
+	</div>
+	<div class="col-sm-6">
+		${2}
+	</div>
+</div>${0}
+endsnippet
+
+snippet alertsuccess "Adds a success alert"
+<div class="alert alert-success">
+	${0}
+</div>
+endsnippet
+
+snippet alertwarning "Adds a warning alert"
+<div class="alert alert-warning">
+	${0}
+</div>
+endsnippet
+
+snippet alertdanger "Adds a danger alert"
+<div class="alert alert-danger">
+	${0}
+</div>
+endsnippet
+
+snippet alertinfo "Adds a info alert"
+<div class="alert alert-info">
+	${0}
+</div>
+endsnippet
+
+snippet devlog "A simple dev log entry"
+<span class="bg-info text-info">${2:date}</span>
+<div>
+	<b>${1:term}</b>
+</div>
+<p class="clear">
+	${3:definition}
+</p>${0}
+endsnippet
+
+snippet h3 "For Valsta titles we use often"
+<h3 class="title-main">${1}<span class="lin"></span></h3>
+${0}
+endsnippet
+
+snippet img "For img tags"
+<img src="${1}" class="img-responsive" alt="${2}" />
+${0}
+endsnippet
+
+
+snippet figure "figure block"
+<figure>
+	<img src="${1}" class="img-responsive" alt="${2}" />
+	<figcaption>${3}</figcaption>
+</figure>
+${0}
+endsnippet
