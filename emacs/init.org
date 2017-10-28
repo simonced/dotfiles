@@ -1053,7 +1053,7 @@ SII files:
  )
 
 (add-hook
- 'clojure-mode-hook (lambda () (lisp-like-init))
+ 'clojure-mode-hook (lambda () (lisp-like-init) (eldoc-mode))
  )
 #+END_SRC
 
