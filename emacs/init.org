@@ -1058,7 +1058,7 @@ SII files:
 #+END_SRC
 
 * Org related (big section)
-** TODO COMMENT Global settings                                            :cleanup:
+** TODO Global settings                                    :cleanup:
 Required packages:
 - org-bullets
 
@@ -1088,8 +1088,8 @@ Required packages:
 
   ;; tasks entries
   (setq org-log-done t
-            org-todo-keywords '((sequence "TODO" "WIP" "ONHOLD" "DONE"))
-            org-todo-keyword-faces '(("WIP" . (:foreground "orange" :weight bold)) ("ONHOLD" . (:foreground "orange" :weight bold))))
+		org-todo-keywords '((sequence "TODO" "WIP" "ONHOLD" "DONE"))
+		org-todo-keyword-faces '(("WIP" . (:foreground "orange" :weight bold)) ("ONHOLD" . (:foreground "orange" :weight bold))))
 
   ;; we insert relative link to files
   (setq org-link-file-path-type 'relative)
@@ -1113,39 +1113,39 @@ Required packages:
 
   ;; Disabling helm when setting tags in org >>>
   (defun kk/org-set-tags-no-helm (orig-func &rest args)
-    "Run org-set-tags without helm."
-    (if (boundp 'helm-mode)
-        (let ((orig-helm-mode helm-mode))
-          (unwind-protect
-              (progn
-                (helm-mode 0)
-                (apply orig-func args)
-                )
-            (helm-mode (if orig-helm-mode 1 0))))
-      (apply orig-func args)
-      ))
+	"Run org-set-tags without helm."
+	(if (boundp 'helm-mode)
+		(let ((orig-helm-mode helm-mode))
+		  (unwind-protect
+			  (progn
+				(helm-mode 0)
+				(apply orig-func args)
+				)
+			(helm-mode (if orig-helm-mode 1 0))))
+	  (apply orig-func args)
+	  ))
 
-  (if (not (version< emacs-version "24.4"))
-    (advice-add 'org-set-tags :around 'kk/org-set-tags-no-helm))
+  (when (not (version< emacs-version "24.4"))
+	  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-helm))
   ;; <<<
 
 
   ;; Disabling ivy when setting tags in org >>>
   (defun kk/org-set-tags-no-ivy (orig-func &rest args)
-    "Run org-set-tags without ivy."
-    (if (boundp 'ivy-mode)
-        (let ((orig-ivy-mode ivy-mode))
-          (unwind-protect
-              (progn
-                (ivy-mode 0)
-                (apply orig-func args)
-                )
-            (ivy-mode (if orig-ivy-mode 1 0))))
-      (apply orig-func args)
-      ))
+	"Run org-set-tags without ivy."
+	(if (boundp 'ivy-mode)
+		(let ((orig-ivy-mode ivy-mode))
+		  (unwind-protect
+			  (progn
+				(ivy-mode 0)
+				(apply orig-func args)
+				)
+			(ivy-mode (if orig-ivy-mode 1 0))))
+	  (apply orig-func args)
+	  ))
 
-  (if (not (version< emacs-version "24.4"))
-    (advice-add 'org-set-tags :around 'kk/org-set-tags-no-ivy))
+  (when (not (version< emacs-version "24.4"))
+	  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-ivy))
   ;; <<<
 
 
@@ -1155,10 +1155,10 @@ Required packages:
   ;; it's better to C-c C-c the block manually to generate the result when needed...
   ;; only needed for org 8, since org 9 we need another method, see below
   (when  (version< (org-version) "9")
-    (lambda ()
-      (setq org-export-babel-evaluate nil)
-          )
-  )
+	(lambda ()
+	  (setq org-export-babel-evaluate nil)
+	  )
+	)
 
   ;; freely evaluation code in block_src in org files
   (setq org-confirm-babel-evaluate nil)
@@ -1167,25 +1167,27 @@ Required packages:
   ;; found at http://emacs.stackexchange.com/a/19301
   (require 'ob-sh)
   (defadvice org-babel-sh-evaluate (around set-shell activate)
-    "Add header argument :shcmd that determines the shell to be called."
-    (let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
-          ad-do-it
-          ))
+	"Add header argument :shcmd that determines the shell to be called."
+	(let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
+	  ad-do-it
+	  ))
 
   ;; Other libs like obp-hp to use php in babel code blocks
   ;; (require 'gnuplot-mode)
-   ;(gnuplot . t)
+  ;;(gnuplot . t)
 
   (if (not (version< emacs-version "24.4"))
-      ;; for newer emacs (24.4 and up)
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (sh . t) (ruby . t) (js . t)))
-    ;; for older emacs (below 24.4)
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (sh . t) (ruby . t) (js . t) (elixir . t)))
-  )
+
+	  ;; for newer emacs (24.4 and up)
+	  (org-babel-do-load-languages
+	   'org-babel-load-languages
+	   '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (sh . t) (ruby . t) (js . t)))
+
+	;; for older emacs (below 24.4)
+	(org-babel-do-load-languages
+	 'org-babel-load-languages
+	 '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (sh . t) (ruby . t) (js . t) (elixir . t)))
+	)
   ;; <<<
 
 
@@ -1201,70 +1203,73 @@ Required packages:
   ;;         (or (plist-get info :html-todo-kwd-class-prefix) "")
   ;;             (org-html-fix-class-name todo)
   ;;         todo)))
-  ;; (if (not (version< emacs-version "24.4"))
+  ;; (when (not (version< emacs-version "24.4"))
   ;;   (advice-add 'org-html--todo :around 'ced/org-html--todo))
   ;; <<< NOT NEEDED IN LAST ORG VERSION (ok in my current version 9.0.9)
 
 
   (defun ced/org-mode-hook ()
-  "org-mode hook"
+	"org-mode hook"
 
-    ;; cute bullets
-    (setq org-bullets-bullet-list '("●" "○" "■" "🞎" "▲" "🛆" "◆" "◇"))
-    (org-bullets-mode)
+	;; cute bullets
+	;; (setq org-bullets-bullet-list '("●" "○" "■" "🞎" "▲" "🛆" "◆" "◇"))
+	(org-bullets-mode)
 
-    ;; export code in color
-    (require 'htmlize)
-    ;;(setq org-html-htmlize-output-type 'css)
+	;; export code in color
+	(require 'htmlize)
+	;;(setq org-html-htmlize-output-type 'css)
 
-    ;; flyspell in org mode files? Not so useful
-    ;; (flyspell-mode 1)
+	;; flyspell in org mode files? Not so useful
+	;; (flyspell-mode 1)
 
-    ;; allows , ' and " as a char in markup and not as a regex component
-    ;; (like in ~g,~)
-    ;; thery are removed from the list bellow
-    (setcar (nthcdr 2 org-emphasis-regexp-components) " \t\r\n")
-    (org-set-emph-re
-     'org-emphasis-regexp-components
-     org-emphasis-regexp-components)
+	;; allows , ' and " as a char in markup and not as a regex component
+	;; (like in ~g,~)
+	;; thery are removed from the list bellow
+	(setcar (nthcdr 2 org-emphasis-regexp-components) " \t\r\n")
+	(org-set-emph-re
+	 'org-emphasis-regexp-components
+	 org-emphasis-regexp-components)
 
-    ;; remapping a key to clear highlights
-    (define-key org-mode-map (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
-
-
-    ;; Exporting into HTML >>>
-    (define-key org-mode-map (kbd "<f12>") '(lambda ()
-                                              (interactive)
-                                              (org-html-export-to-html))
-      )
-
-    (define-key org-mode-map (kbd "C-<f12>") '(lambda ()
-                                                (interactive)
-                                                ;; only exports the current subtree
-                                                (org-html-export-to-html nil t))
-      )
-    ;; <<<
-
-    ;; Exporting to TEXT >>>
-    (define-key org-mode-map (kbd "C-S-<f12>") '(lambda ()
-                                                (interactive)
-                                                ;; only exports the current subtree
-                                                (org-export-to-buffer 'ascii "*Email*" nil t))
-      )
-    ;; <<<
+	;; remapping a key to clear highlights
+	(define-key org-mode-map (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
 
 
-    ;; toggle images in org buffers
-    (define-key org-mode-map (kbd "<f11>") 'org-toggle-inline-images)
+	;; Exporting into HTML >>>
+	(define-key org-mode-map (kbd "<f12>")
+	  '(lambda ()
+		 (interactive)
+		 (org-html-export-to-html))
+	  )
 
-    ;; display image at point
-    (define-key org-mode-map (kbd "C-<f11>") 'ced/org-image-display)
+	(define-key org-mode-map (kbd "C-<f12>")
+	  '(lambda ()
+		 (interactive)
+		 ;; only exports the current subtree
+		 (org-html-export-to-html nil t))
+	  )
+	;; <<<
 
-    ;; store link function
-    ;; Having a PROPERTIES drawer with a CUSTOM_ID is recommanded
-    ;; C-c-x p to add a custom property into the current headline
-    (define-key org-mode-map (kbd "C-c l") 'org-store-link)
-  )
+	;; Exporting to TEXT >>>
+	(define-key org-mode-map (kbd "C-S-<f12>")
+	  '(lambda ()
+		 (interactive)
+		 ;; only exports the current subtree
+		 (org-export-to-buffer 'ascii "*Email*" nil t))
+	  )
+	;; <<<
+
+
+	;; toggle images in org buffers
+	(define-key org-mode-map (kbd "<f11>") 'org-toggle-inline-images)
+
+	;; display image at point
+	(define-key org-mode-map (kbd "C-<f11>") 'ced/org-image-display)
+
+	;; store link function
+	;; Having a PROPERTIES drawer with a CUSTOM_ID is recommanded
+	;; C-c-x p to add a custom property into the current headline
+	(define-key org-mode-map (kbd "C-c l") 'org-store-link)
+	)
 
   (add-hook 'org-mode-hook 'ced/org-mode-hook)
 #+END_SRC
