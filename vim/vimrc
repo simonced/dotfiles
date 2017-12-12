@@ -26,6 +26,7 @@ call plug#begin('~/.vim/bundle')
 " === editing ===
 Plug 'sjl/gundo.vim'
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'j5shi/ctrlp_bdelete.vim'
 Plug 'mattn/emmet-vim'
 if has('gui')
 	Plug 'terryma/vim-smooth-scroll'
@@ -36,6 +37,7 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-obsession'
+Plug 'tpope/vim-scriptease'
 Plug 'tomtom/tcomment_vim'
 Plug 'vim-scripts/IndentAnything'
 "Plug 'gcmt/wildfire.vim'
@@ -46,7 +48,7 @@ if !has('nvim') && v:version>=704 && has('python')
 	Plug 'SirVer/ultisnips'
 	Plug 'valloric/MatchTagAlways'
 endif
-"Plug 'scrooloose/syntastic'
+Plug 'vim-syntastic/syntastic'
 " Syntax related
 Plug 'jelera/vim-javascript-syntax'
 " auto closes pairs
@@ -117,6 +119,9 @@ Plug 'fcpg/vim-fahrenheit'
 Plug 'rakr/vim-two-firewatch'
 Plug 'simonced/dracula-vim'
 Plug 'tssm/fairyfloss.vim'
+Plug 'cocopon/iceberg.vim'
+" ===Colorscheme creation related===
+Plug 'cocopon/pgmnt.vim'
 " ===Dart lang related===
 "Plug 'dart-lang/dart-vim-plugin'
 " ===Haskell goodness===
@@ -521,7 +526,7 @@ let g:lightline = {
     \   'left': [ [ 'mode', 'paste' ],
 	\		['fugitive'],
 	\		['readonly', 'myroot'],
-	\		['filename', 'modified'] ],
+	\		['filename', 'modified', 'syntastic'] ],
 	\ 	'right': [ [ 'lineinfo' ],
 	\            [ 'fileformat', 'fileencoding', 'filetype' ] ]
 	\ },
@@ -534,6 +539,7 @@ let g:lightline = {
 	\ 'component_function': {
 	\   'readonly': 'LightLineReadonly',
 	\   'fugitive': 'LightLineFugitive',
+	\   'syntastic': 'SyntasticStatuslineFlag',
 	\	'myroot': 'MyRoot' }
 	\ }
 function! LightLineReadonly()
@@ -551,11 +557,13 @@ endfunction
 "set completeopt+=menu,menuone
 
 " === syntatic related === good tool to spot mistakes in code right away!
-let g:syntastic_mode_map = { "mode" : "passive" }
+let g:syntastic_mode_map = { "mode" : "passive" } " active or passive
 let g:syntastic_quiet_messages = { "type": "style" }
 let g:syntastic_error_symbol = "x"
 let g:syntastic_warning_symbol = "!"
 let g:syntastic_auto_jump = 2
+let g:syntastic_php_checkers = ['php']
+let g:syntastic_js_checkers = ['jslint']
 
 " === tagbar related ===
 nnoremap <F8> :TagbarToggle<CR>

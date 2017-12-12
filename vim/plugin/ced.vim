@@ -95,7 +95,7 @@ function! ArgsToNewBuffer()
 endfunction
 
 " ======================================================================
-" look or functions in the current fille
+" look for functions in the current fille
 function! FunctionsList()
 	let ok=1
 	if (&filetype == "php")
@@ -114,7 +114,6 @@ function! FunctionsList()
 		cw
 	endif
 endfunction
-
 nnoremap <leader>ff :call FunctionsList()<CR>
 
 " ======================================================================
