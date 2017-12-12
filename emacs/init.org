@@ -637,7 +637,20 @@ If we have a prefix (C-u), we clear the highlight.
 	  (forward-line)
 	  (prog1
 		  (buffer-substring-no-properties (point) (point-max))
-		(kill-buffer)))))
+		(kill-this-buffer)))))
+
+
+(defun ced/get-page-title (url)
+  "Fetch page title at given URL"
+  (interactive)
+  (with-current-buffer (url-retrieve-synchronously url)
+	(beginning-of-buffer)
+	(re-search-forward "<title>\\(.*?\\)</title>")
+	(let ((text (match-string-no-properties 1)))
+	  (kill-this-buffer)
+	  ;; do something with the encoding!
+	  (mm-decode-string text "utf-8"))))
+
 #+END_SRC
 ** Text decoding
 *** Base64 -> utf-8
