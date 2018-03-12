@@ -211,24 +211,23 @@ endfunction
 function! ced#PhpInit()
 	nnoremap <buffer> <up> :call ced#FunctionJumpUp()<CR>
 	nnoremap <buffer> <down> :call ced#FunctionJumpDown()<CR>
-	" having an auto ; at line breaks can be very useful
-	inoremap <buffer> <S-CR> ;
-	"setlocal iskeyword-=-,$ autoindent nosmartindent
-	setlocal autoindent nosmartindent
 endfunction
 
 augroup ftInit
 	au!
 	" mappings
-	au BufRead *.tpl setlocal filetype=html
-	au BufRead *.php,*.inc  setlocal filetype=php
+	au BufRead *.tpl  setlocal filetype=smarty
+	au BufRead *.inc  setlocal filetype=php
+	au BufRead *.ctp  setlocal filetype=php
 
 	" buffer options
 	au FileType html,smarty call ced#HtmlInit()
 	au FileType php call ced#PhpInit()
+	"au FileType phtml setlocal autoindent nosmartindent
 	au FileType javascript,css,html,smarty,clojure setlocal iskeyword+=-,@-@
 	au FileType css setlocal omnifunc=csscomplete#CompleteCSS iskeyword+=#
 	au FileType python,haskell setlocal tabstop=4 shiftwidth=4 expandtab
+	au FileType php setlocal iskeyword-=-
 	" included files are freaking slow in ruby!
 	au FileType ruby setlocal complete-=i
 augroup END

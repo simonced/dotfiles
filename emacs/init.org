@@ -75,10 +75,10 @@ Return a list of installed packages or nil for every skipped package."
    ;; === Web related ===
    'apache-mode
    'web-mode
-   ;; 'php-mode
-   ;; 'ob-php                             ; php in org files
-   ;; 'php-eldoc
-   ;; 'ac-php                             ; Works with company as well
+   'php-mode
+   'ob-php                             ; php in org files
+   'php-eldoc
+   'ac-php                             ; Works with company as well
    'emmet-mode
    'js2-mode
    ;; === Lisp related ===
@@ -1022,12 +1022,8 @@ SII files:
 (add-hook 'web-mode-hook
 		  (lambda ()
 
-;;			(require 'ac-php)
-;;			(require 'php-mode)
-;;			(setq ac-sources  '(ac-source-php ) )
 			(setq web-mode-enable-current-element-highlight t)
 			
-;;			(php-eldoc-enable)
 			(emmet-mode)
 			(rainbow-delimiters-mode)
 			(define-key web-mode-map 
@@ -1038,13 +1034,21 @@ SII files:
 				 (newline)))
 		  ))
 
+(add-hook 'php-mode-hook
+		  (lambda ()
+			(require 'php-mode)
+			(require 'ac-php)
+			(php-eldoc-enable)
+			(setq ac-sources '(ac-source-php ) )
+			))
+
 ;;(add-hook 'css-mode-hook
 ;;		  (lambda ()
 ;;			(rainbow-mode 1)
 ;;			(local-set-key (kbd "TAB") 'company-css)
 ;;			))
 
-(add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl$" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))

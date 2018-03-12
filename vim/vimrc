@@ -61,6 +61,7 @@ Plug 'othree/csscomplete.vim'
 Plug 'mhinz/vim-sayonara'
 Plug 'kshenoy/vim-signature'
 Plug 'junegunn/vim-easy-align'
+Plug 'captbaritone/better-indent-support-for-php-with-html'
 " === DB related ===
 if v:version>704
 	Plug 'chrisbra/vim-diff-enhanced'
