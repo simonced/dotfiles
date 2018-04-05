@@ -25,7 +25,7 @@ Found on [[http://melpa.org/#/getting-started][Melpa]].
 #+BEGIN_SRC emacs-lisp
   (require 'package) ;; You might already have this line
   (add-to-list 'package-archives
-               '("org" . "http://orgmode.org/elpa/") t)
+               '("org" . "https://orgmode.org/elpa/") t)
   (add-to-list 'package-archives
                '("melpa" . "http://melpa.org/packages/") t)
   (package-initialize) ;; You might already have this line
@@ -235,7 +235,7 @@ See [[#before-starting][Before starting]] section for reference.
 ** Org related
 #+BEGIN_SRC emacs-lisp
 ;; to use shell as code blocks, a lib in my dotfiels/emacs folder has to be loaded
-(load-library "ob-shell")
+;; (load-library "ob-shell")
 
 ;; same but used to insert timestamp in org files at export
 ;; used in conjonction with
@@ -1193,12 +1193,12 @@ Required packages:
 
   ;; support for shell command parameters in babel blocks
   ;; found at http://emacs.stackexchange.com/a/19301
-  (require 'ob-sh)
-  (defadvice org-babel-sh-evaluate (around set-shell activate)
-	"Add header argument :shcmd that determines the shell to be called."
-	(let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
-	  ad-do-it
-	  ))
+  ;; (require 'ob-sh)
+  ;; (defadvice org-babel-sh-evaluate (around set-shell activate)
+  ;; 	"Add header argument :shcmd that determines the shell to be called."
+  ;; 	(let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
+  ;; 	  ad-do-it
+  ;; 	  ))
 
   ;; Other libs like obp-hp to use php in babel code blocks
   ;; (require 'gnuplot-mode)
@@ -1209,12 +1209,12 @@ Required packages:
 	  ;; for newer emacs (24.4 and up)
 	  (org-babel-do-load-languages
 	   'org-babel-load-languages
-	   '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (sh . t) (ruby . t) (js . t)))
+	   '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (ruby . t) (js . t))) ; (sh . t)
 
 	;; for older emacs (below 24.4)
 	(org-babel-do-load-languages
 	 'org-babel-load-languages
-	 '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (sh . t) (ruby . t) (js . t) (elixir . t)))
+	 '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (ruby . t) (js . t) (elixir . t))) ; (sh . t)
 	)
   ;; <<<
 
