@@ -1042,11 +1042,11 @@ SII files:
 ;;			(setq ac-sources '(ac-source-php ) )
 ;;			))
 
-;;(add-hook 'css-mode-hook
-;;		  (lambda ()
-;;			(rainbow-mode 1)
-;;			(local-set-key (kbd "TAB") 'company-css)
-;;			))
+(add-hook 'css-mode-hook
+		  (lambda ()
+			(rainbow-mode 1)
+			(local-set-key (kbd "TAB") 'company-css)
+			))
 
 ;;(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl$" . web-mode))
