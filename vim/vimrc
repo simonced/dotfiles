@@ -19,9 +19,13 @@
 
 " <<<
 " Plugins  >>>
-" Important to source ~/.vim/autoload/plug.vim before my file
-source ~/.vim/autoload/plug.vim
-call plug#begin('~/.vim/bundle')
+" might be necessary to source ~/.vim/autoload/plug.vim before my file
+"source ~/.vim/autoload/plug.vim
+if has('win32')
+	call plug#begin('~/vimfiles/bundle')
+else
+	call plug#begin('~/.vim/bundle')
+endif
 
 " === editing ===
 Plug 'sjl/gundo.vim'
