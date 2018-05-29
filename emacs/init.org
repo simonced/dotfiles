@@ -642,15 +642,25 @@ If we have a prefix (C-u), we clear the highlight.
 
 (defun ced/get-page-title (url)
   "Fetch page title at given URL"
-  (interactive)
   (with-current-buffer (url-retrieve-synchronously url)
 	(beginning-of-buffer)
-	(re-search-forward "<title>\\(.*?\\)</title>")
+	(re-search-forward "<title.*?>\\(.*?\\)</title>")
 	(let ((text (match-string-no-properties 1)))
 	  (kill-this-buffer)
 	  ;; do something with the encoding!
 	  (mm-decode-string text "utf-8"))))
 
+
+(defun ced/make-org-link-from-url-in-region (p1 p2)
+  "Fetches page title from active URL in region and make an Org mode URL"
+  (interactive "r")
+  (message "---> %d %d" p1 p2)
+  (let* ((url (buffer-substring-no-properties p1 p2))
+		(title (ced/get-page-title url)))
+	(message "Found Title: %s" title)
+	(kill-region p1 p2)
+	(insert (format "[[%s][%s]]" url title)))
+  )
 #+END_SRC
 ** Text decoding
 *** Base64 -> utf-8
