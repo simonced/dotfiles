@@ -125,6 +125,7 @@ Plug 'rakr/vim-two-firewatch'
 Plug 'simonced/dracula-vim'
 Plug 'tssm/fairyfloss.vim'
 Plug 'cocopon/iceberg.vim'
+Plug 'nanotech/jellybeans.vim'
 " ===Colorscheme creation related===
 Plug 'cocopon/pgmnt.vim'
 " ===Dart lang related===

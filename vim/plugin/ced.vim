@@ -216,7 +216,7 @@ endfunction
 augroup ftInit
 	au!
 	" mappings
-	au BufRead *.tpl  setlocal filetype=smarty
+	au BufRead *.tpl  setlocal filetype=html
 	au BufRead *.inc  setlocal filetype=php
 	au BufRead *.ctp  setlocal filetype=php
 
