@@ -1101,215 +1101,217 @@ Required packages:
 - org-bullets
 
 #+BEGIN_SRC emacs-lisp
+;; hide source blocks by default
+;; (setq org-hide-block-startup t)
 
-  ;; hide source blocks by default
-  ;; (setq org-hide-block-startup t)
+;; start org files in indent minor mode (a bit cleaner to look at)
+(setq org-startup-indented t)
 
-  ;; start org files in indent minor mode (a bit cleaner to look at)
-  (setq org-startup-indented t)
+;; having code blocs in color in org files
+(setq org-src-fontify-natively t)
 
-  ;; having code blocs in color in org files
-  (setq org-src-fontify-natively t)
+;; no subscripts in tables (_ character) unless {} are used
+(setq org-export-with-sub-superscripts `{})
 
-  ;; no subscripts in tables (_ character) unless {} are used
-  (setq org-export-with-sub-superscripts `{})
+;; we export check boxes
+(setq org-html-checkbox-type 'html)
 
-  ;; we export check boxes
-  (setq org-html-checkbox-type 'html)
+;; we dont need the footer at html export
+(setq org-export-html-postamble nil)
 
-  ;; we dont need the footer at html export
-  (setq org-export-html-postamble nil)
+(setq org-ellipsis " +") 
+;; another good option would be "ARROW POINTING RIGHTWARDS THEN CURVING DOWNWARDS"
+;; but only if a good font containing it is available...
 
-  (setq org-ellipsis " +") 
-  ;; another good option would be "ARROW POINTING RIGHTWARDS THEN CURVING DOWNWARDS"
-  ;; but only if a good font containing it is available...
+;; tasks entries
+(setq org-log-done t
+	  org-todo-keywords '((sequence "TODO" "WIP" "ONHOLD" "DONE"))
+	  org-todo-keyword-faces '(("WIP" . (:foreground "orange" :weight bold)) ("ONHOLD" . (:foreground "orange" :weight bold))))
 
-  ;; tasks entries
-  (setq org-log-done t
-		org-todo-keywords '((sequence "TODO" "WIP" "ONHOLD" "DONE"))
-		org-todo-keyword-faces '(("WIP" . (:foreground "orange" :weight bold)) ("ONHOLD" . (:foreground "orange" :weight bold))))
+;; we insert relative link to files
+(setq org-link-file-path-type 'relative)
 
-  ;; we insert relative link to files
-  (setq org-link-file-path-type 'relative)
+;; we don't want the exported data in the kill ring
+(setq org-export-copy-to-kill-ring nil)
 
-  ;; we don't want the exported data in the kill ring
-  (setq org-export-copy-to-kill-ring nil)
+;; default to 4 headlines of export
+(setq org-export-headline-levels 4)
 
-  ;; default to 4 headlines of export
-  (setq org-export-headline-levels 4)
+;; no numbers by default at export
+(setq org-export-with-section-numbers nil)
 
-  ;; no numbers by default at export
-  (setq org-export-with-section-numbers nil)
+;; no postamble by default
+(setq org-export-html-postamble nil)
 
-  ;; no postamble by default
-  (setq org-export-html-postamble nil)
-
-  ;; format for code blocks
-  (setq org-src-preserve-indentation t)
-  (setq org-src-fontify-natively t)
-
-
-  ;; Disabling helm when setting tags in org >>>
-  (defun kk/org-set-tags-no-helm (orig-func &rest args)
-	"Run org-set-tags without helm."
-	(if (boundp 'helm-mode)
-		(let ((orig-helm-mode helm-mode))
-		  (unwind-protect
-			  (progn
-				(helm-mode 0)
-				(apply orig-func args)
-				)
-			(helm-mode (if orig-helm-mode 1 0))))
-	  (apply orig-func args)
-	  ))
-
-  (when (not (version< emacs-version "24.4"))
-	  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-helm))
-  ;; <<<
+;; format for code blocks
+(setq org-src-preserve-indentation t)
+(setq org-src-fontify-natively t)
 
 
-  ;; Disabling ivy when setting tags in org >>>
-  (defun kk/org-set-tags-no-ivy (orig-func &rest args)
-	"Run org-set-tags without ivy."
-	(if (boundp 'ivy-mode)
-		(let ((orig-ivy-mode ivy-mode))
-		  (unwind-protect
-			  (progn
-				(ivy-mode 0)
-				(apply orig-func args)
-				)
-			(ivy-mode (if orig-ivy-mode 1 0))))
-	  (apply orig-func args)
-	  ))
+;; Disabling helm when setting tags in org >>>
+(defun kk/org-set-tags-no-helm (orig-func &rest args)
+  "Run org-set-tags without helm."
+  (if (boundp 'helm-mode)
+	  (let ((orig-helm-mode helm-mode))
+		(unwind-protect
+			(progn
+			  (helm-mode 0)
+			  (apply orig-func args)
+			  )
+		  (helm-mode (if orig-helm-mode 1 0))))
+	(apply orig-func args)
+	))
 
-  (when (not (version< emacs-version "24.4"))
-	  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-ivy))
-  ;; <<<
+(when (not (version< emacs-version "24.4"))
+  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-helm))
+;; <<<
 
 
-  ;; babel related >>>
+;; Disabling ivy when setting tags in org >>>
+(defun kk/org-set-tags-no-ivy (orig-func &rest args)
+  "Run org-set-tags without ivy."
+  (if (boundp 'ivy-mode)
+	  (let ((orig-ivy-mode ivy-mode))
+		(unwind-protect
+			(progn
+			  (ivy-mode 0)
+			  (apply orig-func args)
+			  )
+		  (ivy-mode (if orig-ivy-mode 1 0))))
+	(apply orig-func args)
+	))
 
-  ;; no auto export of blocks, it's heavy when 3 or 4 plantuml are present in the same document
-  ;; it's better to C-c C-c the block manually to generate the result when needed...
-  ;; only needed for org 8, since org 9 we need another method, see below
-  (when  (version< (org-version) "9")
-	(lambda ()
-	  (setq org-export-babel-evaluate nil)
-	  )
+(when (not (version< emacs-version "24.4"))
+  (advice-add 'org-set-tags :around 'kk/org-set-tags-no-ivy))
+;; <<<
+
+
+;; babel related >>>
+
+;; no auto export of blocks, it's heavy when 3 or 4 plantuml are present in the same document
+;; it's better to C-c C-c the block manually to generate the result when needed...
+;; only needed for org 8, since org 9 we need another method, see below
+(when  (version< (org-version) "9")
+  (lambda ()
+	(setq org-export-babel-evaluate nil)
 	)
+  )
 
-  ;; freely evaluation code in block_src in org files
-  (setq org-confirm-babel-evaluate nil)
+;; freely evaluation code in block_src in org files
+(setq org-confirm-babel-evaluate nil)
 
-  ;; support for shell command parameters in babel blocks
-  ;; found at http://emacs.stackexchange.com/a/19301
-  ;; (require 'ob-sh)
-  ;; (defadvice org-babel-sh-evaluate (around set-shell activate)
-  ;; 	"Add header argument :shcmd that determines the shell to be called."
-  ;; 	(let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
-  ;; 	  ad-do-it
-  ;; 	  ))
+;; support for shell command parameters in babel blocks
+;; found at http://emacs.stackexchange.com/a/19301
+;; (require 'ob-sh)
+;; (defadvice org-babel-sh-evaluate (around set-shell activate)
+;; 	"Add header argument :shcmd that determines the shell to be called."
+;; 	(let* ((org-babel-sh-command (or (cdr (assoc :shcmd params)) org-babel-sh-command)))
+;; 	  ad-do-it
+;; 	  ))
 
-  ;; Other libs like obp-hp to use php in babel code blocks
-  ;; (require 'gnuplot-mode)
-  ;;(gnuplot . t)
+;; Other libs like obp-hp to use php in babel code blocks
+;; (require 'gnuplot-mode)
+;;(gnuplot . t)
 
-  (if (not (version< emacs-version "24.4"))
+(if (not (version< emacs-version "24.4"))
 
-	  ;; for newer emacs (24.4 and up)
-	  (org-babel-do-load-languages
-	   'org-babel-load-languages
-	   '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (ruby . t) (js . t))) ; (sh . t)
-
-	;; for older emacs (below 24.4)
+	;; for newer emacs (24.4 and up)
 	(org-babel-do-load-languages
 	 'org-babel-load-languages
-	 '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (ruby . t) (js . t) (elixir . t))) ; (sh . t)
+	 '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (ruby . t) (js . t))) ; (sh . t)
+
+  ;; for older emacs (below 24.4)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t) (sql . t) (js . t) (plantuml . t) (ruby . t) (js . t) (elixir . t))) ; (sh . t)
+  )
+;; <<<
+
+
+;; >>>
+;; prevents nilTODO to be exported in HTML for headlines with TODO keywords in the TOC
+;; answer proposed on reddit: https://www.reddit.com/r/emacs/comments/46717x/orgmode_todo_html_export_in_toc/d042x40
+
+;; (defun ced/org-html--todo (orig-func todo info)
+;;   "Format TODO keywords into HTML."
+;;   (when todo
+;;     (format "<span class=\"%s %s%s\">%s</span>"
+;;         (if (member todo org-done-keywords) "done" "todo")
+;;         (or (plist-get info :html-todo-kwd-class-prefix) "")
+;;             (org-html-fix-class-name todo)
+;;         todo)))
+;; (when (not (version< emacs-version "24.4"))
+;;   (advice-add 'org-html--todo :around 'ced/org-html--todo))
+;; <<< NOT NEEDED IN LAST ORG VERSION (ok in my current version 9.0.9)
+
+
+(defun ced/org-mode-hook ()
+  "org-mode hook"
+
+  ;; cute bullets
+  ;; (setq org-bullets-bullet-list '("●" "○" "■" "🞎" "▲" "🛆" "◆" "◇"))
+  (org-bullets-mode)
+
+  ;; export code in color
+  (require 'htmlize)
+  ;;(setq org-html-htmlize-output-type 'css)
+
+  ;; flyspell in org mode files? Not so useful
+  ;; (flyspell-mode 1)
+
+  ;; allows , ' and " as a char in markup and not as a regex component
+  ;; (like in ~g,~)
+  ;; thery are removed from the list bellow
+  (setcar (nthcdr 2 org-emphasis-regexp-components) " \t\r\n")
+  (org-set-emph-re
+   'org-emphasis-regexp-components
+   org-emphasis-regexp-components)
+
+  ;; remapping a key to clear highlights
+  (define-key org-mode-map (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
+
+
+  ;; Exporting into HTML >>>
+  (define-key org-mode-map (kbd "<f12>")
+	'(lambda ()
+	   (interactive)
+	   (org-html-export-to-html))
+	)
+
+  (define-key org-mode-map (kbd "C-<f12>")
+	'(lambda ()
+	   (interactive)
+	   ;; only exports the current subtree
+	   (org-html-export-to-html nil t))
+	)
+  ;; <<<
+
+  ;; Exporting to TEXT >>>
+  (define-key org-mode-map (kbd "C-S-<f12>")
+	'(lambda ()
+	   (interactive)
+	   ;; only exports the current subtree
+	   (org-export-to-buffer 'ascii "*Email*" nil t))
 	)
   ;; <<<
 
 
-  ;; >>>
-  ;; prevents nilTODO to be exported in HTML for headlines with TODO keywords in the TOC
-  ;; answer proposed on reddit: https://www.reddit.com/r/emacs/comments/46717x/orgmode_todo_html_export_in_toc/d042x40
+  ;; toggle images in org buffers
+  (define-key org-mode-map (kbd "<f11>") 'org-toggle-inline-images)
 
-  ;; (defun ced/org-html--todo (orig-func todo info)
-  ;;   "Format TODO keywords into HTML."
-  ;;   (when todo
-  ;;     (format "<span class=\"%s %s%s\">%s</span>"
-  ;;         (if (member todo org-done-keywords) "done" "todo")
-  ;;         (or (plist-get info :html-todo-kwd-class-prefix) "")
-  ;;             (org-html-fix-class-name todo)
-  ;;         todo)))
-  ;; (when (not (version< emacs-version "24.4"))
-  ;;   (advice-add 'org-html--todo :around 'ced/org-html--todo))
-  ;; <<< NOT NEEDED IN LAST ORG VERSION (ok in my current version 9.0.9)
+  ;; display image at point
+  (define-key org-mode-map (kbd "C-<f11>") 'ced/org-image-display)
 
+  ;; store link function
+  ;; Having a PROPERTIES drawer with a CUSTOM_ID is recommanded
+  ;; C-c-x p to add a custom property into the current headline
+  (define-key org-mode-map (kbd "C-c l") 'org-store-link)
+  )
 
-  (defun ced/org-mode-hook ()
-	"org-mode hook"
+(add-hook 'org-mode-hook 'ced/org-mode-hook)
 
-	;; cute bullets
-	;; (setq org-bullets-bullet-list '("●" "○" "■" "🞎" "▲" "🛆" "◆" "◇"))
-	(org-bullets-mode)
-
-	;; export code in color
-	(require 'htmlize)
-	;;(setq org-html-htmlize-output-type 'css)
-
-	;; flyspell in org mode files? Not so useful
-	;; (flyspell-mode 1)
-
-	;; allows , ' and " as a char in markup and not as a regex component
-	;; (like in ~g,~)
-	;; thery are removed from the list bellow
-	(setcar (nthcdr 2 org-emphasis-regexp-components) " \t\r\n")
-	(org-set-emph-re
-	 'org-emphasis-regexp-components
-	 org-emphasis-regexp-components)
-
-	;; remapping a key to clear highlights
-	(define-key org-mode-map (kbd "C-c <SPC>") 'lazy-highlight-cleanup)
-
-
-	;; Exporting into HTML >>>
-	(define-key org-mode-map (kbd "<f12>")
-	  '(lambda ()
-		 (interactive)
-		 (org-html-export-to-html))
-	  )
-
-	(define-key org-mode-map (kbd "C-<f12>")
-	  '(lambda ()
-		 (interactive)
-		 ;; only exports the current subtree
-		 (org-html-export-to-html nil t))
-	  )
-	;; <<<
-
-	;; Exporting to TEXT >>>
-	(define-key org-mode-map (kbd "C-S-<f12>")
-	  '(lambda ()
-		 (interactive)
-		 ;; only exports the current subtree
-		 (org-export-to-buffer 'ascii "*Email*" nil t))
-	  )
-	;; <<<
-
-
-	;; toggle images in org buffers
-	(define-key org-mode-map (kbd "<f11>") 'org-toggle-inline-images)
-
-	;; display image at point
-	(define-key org-mode-map (kbd "C-<f11>") 'ced/org-image-display)
-
-	;; store link function
-	;; Having a PROPERTIES drawer with a CUSTOM_ID is recommanded
-	;; C-c-x p to add a custom property into the current headline
-	(define-key org-mode-map (kbd "C-c l") 'org-store-link)
-	)
-
-  (add-hook 'org-mode-hook 'ced/org-mode-hook)
+;;; automatically saving all org files when archiving a section (with C-c $)
+(advice-add 'org-archive-default-command :after #'org-save-all-org-buffers)
 #+END_SRC
 
 ** Capture
