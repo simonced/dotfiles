@@ -143,7 +143,7 @@ filetype plugin on
 filetype indent on
 
 " syntax
-syntax on
+syntax off
 syntax enable
 
 " my variables
